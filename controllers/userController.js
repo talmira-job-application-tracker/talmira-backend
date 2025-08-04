@@ -1,10 +1,12 @@
-import HttpError from "../middleware/httpError.js";
+import HttpError from "../middlewares/httpError.js";
 import User from "../models/users.js";
 
 // View Profile
 export const viewProfile = async (req, res, next) => {
   try {
-    const userId = req.user.id;
+    const userId = req.userData.user_id;
+
+
     // Gets the user ID from the authenticated token
 
     const user = await User.findById(userId).select('-password');
@@ -19,6 +21,7 @@ export const viewProfile = async (req, res, next) => {
       data: user,
     });
   } catch (err) {
+     console.error("View profile error:", err);
     return next(new HttpError("Server error", 500));
   }
 };
