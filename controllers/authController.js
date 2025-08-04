@@ -1,20 +1,20 @@
 import { validationResult } from "express-validator"
-import HttpError from "../middlewares/httpError";
+import HttpError from "../middlewares/httpError.js";
 import bcrypt from 'bcrypt'
-import User from "../models/users";
+import User from "../models/users.js";
 import jwt from "jsonwebtoken";
 
 //register
 export const registerUser = async (req, res, next) => {
     try{
-        const errors = validationResult(req);
-        console.log('validation errors:',errors);
+        // const errors = validationResult(req);
+        // console.log('validation errors:',errors);
 
-        if(!errors.isEmpty()) {
-            return next(new HttpError("Invalid inputs passed, please check again", 422))
-        } else {
-            const { name, email, role, password } = req.body
-            const imagePath = req.file ? req.file.path.replace(/\\/g, "/") : 'uploads/default-profile-pic.png';
+        // if(!errors.isEmpty()) {
+        //     return next(new HttpError("Invalid inputs passed, please check again", 422))
+        // } else {
+            const { name, email, role, password, age, phone } = req.body
+            // const imagePath = req.file ? req.file.path.replace(/\\/g, "/") : 'uploads/default-profile-pic.png';
 
             const userExists = await User.findOne({ email });
             if(userExists) {
@@ -27,7 +27,7 @@ export const registerUser = async (req, res, next) => {
                     email, 
                     role,
                     password: hashedPassword,
-                    image: imagePath,
+                    // image: imagePath,
                     age,
                     phone,
                 }).save();
@@ -53,9 +53,10 @@ export const registerUser = async (req, res, next) => {
                         }
                     })
                 }
-            }
+            // }
         }
     } catch (err) {
+        console.error("Register Error:", err);
         return next(new HttpError("Process failed", 500));
     }
 };

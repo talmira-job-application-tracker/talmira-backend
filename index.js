@@ -2,6 +2,7 @@ import express from 'express'
 import cors from 'cors'
 import dotenv, { config } from 'dotenv'
 import connectDB from './database/connectDB.js'
+import authRouter from './routes/authRoute.js'
 
 dotenv.config()
 
@@ -15,6 +16,8 @@ app.use('/uploads', express.static('uploads'))
 app.use(express.json())
 app.use(cors())
 
+app.use('/api/auth', authRouter)
+
 
 // Custom error handler
 app.use((error, req, res, next) => {
@@ -24,13 +27,13 @@ app.use((error, req, res, next) => {
   });
 });
 
-// GLOBAL ERROR HANDLER
-app.use((error, res) => {
-    const statusCode = typeof error.code === 'number' ? error.code : 500;
-    res.status(statusCode).json({
-        message: error.message || "An unknown error occurred",
-    });
-});
+// // GLOBAL ERROR HANDLER
+// app.use((error, res) => {
+//     const statusCode = typeof error.code === 'number' ? error.code : 500;
+//     res.status(statusCode).json({
+//         message: error.message || "An unknown error occurred",
+//     });
+// });
 
 
 // starting server
