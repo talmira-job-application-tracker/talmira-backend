@@ -35,13 +35,27 @@ export const registerUser = async (req, res, next) => {
                 if(!user){
                     return next(new HttpError('Registration failed', 400));
                 } else {
-                    const token = jwt.sign({
-                        
+                    const token = jwt.sign(
+                        {id: user._id, role: user.role },
+                        process.env.JWT_SECRET,
+                        { expiresIn: process.env.JWT_TOKEN_EXPIRY}
+                    );
+
+                    res.status(201).json({
+                        status: true,
+                        message: "Registered Successfully",
+                        token,
+                        data: {
+                            _id: user._id,
+                            email: user.email,
+                            role: user.role,
+                            age: user.age
+                        }
                     })
                 }
             }
         }
-    } catch {
-
+    } catch (err) {
+        return next(new HttpError("Process failed", 500));
     }
-}
+};
