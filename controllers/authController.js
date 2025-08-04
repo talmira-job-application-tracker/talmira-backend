@@ -60,3 +60,45 @@ export const registerUser = async (req, res, next) => {
         return next(new HttpError("Process failed", 500));
     }
 };
+
+
+export const loginUser = async ( req, res, next) => {
+    try{
+
+        const { email, password } = req.body;
+        const user = await User.findOne({email});
+
+        if(!user){
+            return next(new HttpError("user doesn't exist",404));
+        } else {
+            const isMatch = await bcrypt.compare(password, user.password);
+
+            if(!isMatch){
+                return next(new HttpError('invalid credentials',403))
+            } else {
+                const token = jwt.sign(
+                    { id: user._id, role: user.role },
+                    process.env.SECRET_KEY,
+                    { expiresIn: process.env.JWT_TOKEN_EXPIRY}
+                );
+
+                if(!token){
+                    return next(new HttpError('Token generation failed', 403));
+                } else {
+                    res.status(200).json({
+                        status: true,
+                        message: "Login successful",
+                        token,
+                        data: {
+                            _id: user.id,
+                            email: user.email,
+                            role: user.role
+                        }
+                    })
+                }
+            }
+        }
+    } catch (err){
+        return next(new HttpError("Login Failed", 500));
+    }
+};
