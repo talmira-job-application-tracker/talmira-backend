@@ -1,5 +1,5 @@
-import HttpError from "../middleware/httpError";
-import User from "../models/users";
+import HttpError from "../middleware/httpError.js";
+import User from "../models/users.js";
 
 // View Profile
 export const viewProfile = async (req, res, next) => {
