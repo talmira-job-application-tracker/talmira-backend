@@ -24,6 +24,14 @@ app.use((error, req, res, next) => {
   });
 });
 
+// GLOBAL ERROR HANDLER
+app.use((error, res) => {
+    const statusCode = typeof error.code === 'number' ? error.code : 500;
+    res.status(statusCode).json({
+        message: error.message || "An unknown error occurred",
+    });
+});
+
 
 // starting server
 app.listen(PORT, () => {
