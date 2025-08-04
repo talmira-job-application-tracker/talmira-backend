@@ -1,4 +1,6 @@
 import jwt from 'jsonwebtoken'
+import User from '../models/users.js';
+import HttpError from './httpError.js';
 
 const userAuthCheck = async ( req, res, next) => {
     if(req.method === "OPTIONS"){
@@ -11,7 +13,7 @@ const userAuthCheck = async ( req, res, next) => {
      if(!token){
         return next(new HttpError("authentication failed",403));
      }  else {
-         const decodedToken = jwt.verify(token, process.env.SECRET_KEY);
+         const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
 
          const user = await User.findOne({_id: decodedToken.id, role: decodedToken.role })
  
