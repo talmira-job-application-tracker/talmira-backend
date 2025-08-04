@@ -35,10 +35,10 @@ const userSchema = new mongoose.Schema({
         required: true,
         unique: true,
     },
-     isDeleted: {
-    type: Boolean,
-    default: false
-  }
+    isDeleted: {
+        type: Boolean,
+        default: false
+    }
 },
     {
     timestamps: true

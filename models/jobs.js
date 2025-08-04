@@ -23,7 +23,7 @@ const jobSchema = new mongoose.Schema(
       required: true
     },
 
-    jobtype: {
+    jobType: {
       type: String,
       enum: ["Full-time", "Part-time", "Contract", "Internship"],
       required: true
@@ -56,19 +56,13 @@ const jobSchema = new mongoose.Schema(
     is_deleted: {
       type: Boolean,
       default: false
-    },
-
-    postedBy: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "userModel" 
     }
-
   },
   {
     timestamps: true  
   }
 );
 
-const jobModel = mongoose.model("jobModel", jobSchema);
+const Job = mongoose.model("Job", jobSchema);
 
-export default jobModel;
+export default Job;

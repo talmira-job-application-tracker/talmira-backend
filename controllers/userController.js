@@ -1,5 +1,4 @@
 import HttpError from "../middlewares/httpError.js";
-import jobModel from "../models/jobs.js";
 import User from "../models/users.js";
 
 // View Profile
