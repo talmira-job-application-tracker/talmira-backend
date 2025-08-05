@@ -63,3 +63,50 @@ export const editProfile = async(req,res,next) => {
 }
 
 
+// listAllProfile
+export const listAllProfile = async (req, res, next) => {
+  try {
+    const role = req.userData.user_role;
+
+    if (role !== 'admin') {
+      return next(new HttpError("You are not authorized to view this page", 403));
+    }
+
+    const users = await User.find().select('-password');
+
+    if (!users || users.length === 0) {
+      return next(new HttpError('No users found', 404));
+    }
+
+    res.status(200).json({
+      status: true,
+      message: "Users fetched successfully",
+      data: users,
+    });
+  } catch (err) {
+    next(new HttpError("Failed to fetch profiles", 500));
+  }
+};
+
+//delete a profile
+export const deleteUserProfile = async (req,res,next) => {
+  try{
+    const userId = req.params.id;
+    const user = await User.findOneAndUpdate(
+      { _id: userId, isDeleted: false }, 
+      { isDeleted: true },
+      { new: true }
+    );
+    if (!user) {
+      return next (new HttpError("User not found", 404))
+    }
+    res.status(200).json({
+    message: "User  deleted",
+    data: user,
+  });
+  } catch (err) {
+    return next (new HttpError("Failed to delete" ,500))
+
+  }
+}
+

@@ -5,6 +5,7 @@ import connectDB from './database/connectDB.js'
 import authRouter from './routes/authRoute.js'
 import userRouter from './routes/userRoutes.js'
 import jobRouter from './routes/jobRoute.js'
+import companyRouter from './routes/companyRoute.js'
 
 dotenv.config()
 
@@ -21,6 +22,7 @@ app.use(cors())
 app.use('/api/auth', authRouter)
 app.use('/api/user',userRouter)
 app.use('/api/job', jobRouter)
+app.use('/api/company', companyRouter)
 
 
 // Custom error handler

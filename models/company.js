@@ -25,8 +25,21 @@ const companySchema = new mongoose.Schema({
     logo: {
         type: String,
         default: ''
-    }
+    },
+    isDeleted: {
+    type: Boolean,
+    default: false
+}
 });
 
 const Company = mongoose.model('Company', companySchema);
 export default Company;
+
+//edit company
+export const editCompany = async (req,res,next) => {
+    try{
+        
+    } catch {
+
+    }
+}
