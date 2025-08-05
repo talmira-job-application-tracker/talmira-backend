@@ -14,7 +14,7 @@ export const registerUser = async (req, res, next) => {
         //     return next(new HttpError("Invalid inputs passed, please check again", 422))
         // } else {
             const { name, email, role, password, age, phone } = req.body
-            // const imagePath = req.file ? req.file.path.replace(/\\/g, "/") : 'uploads/default-profile-pic.png';
+            const imagePath = req.file ? req.file.path.replace(/\\/g, "/") : 'uploads/default-profile-pic.png';
 
             const userExists = await User.findOne({ email });
             if(userExists) {
@@ -27,7 +27,7 @@ export const registerUser = async (req, res, next) => {
                     email, 
                     role,
                     password: hashedPassword,
-                    // image: imagePath,
+                    image: imagePath,
                     age,
                     phone,
                 }).save();

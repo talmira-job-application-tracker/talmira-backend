@@ -35,7 +35,7 @@ const jobSchema = new mongoose.Schema(
     },
 
     language: {
-      type: String,
+      type: [String],
       required: true
     },
 
@@ -45,17 +45,14 @@ const jobSchema = new mongoose.Schema(
     },
 
     keyword: {
-      type: String
+      type: [String]
     },
 
-    isRemote: {
-      type: Boolean,
+    workMode: {
+      type: String,
+      enum: ["Hybrid", "On-Site", "Remote"],
+      default: "On-Site",
       required: true
-    },
-
-    is_deleted: {
-      type: Boolean,
-      default: false
     }
   },
   {
