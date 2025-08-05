@@ -56,9 +56,13 @@ export const addJob = async( req, res, next) => {
     try{
         const errors = validationResult(req)
         if(!errors.isEmpty()){
-                return next(new HttpError("Invalid inputs,please check again",422))
-            } 
-    
+            return next(new HttpError("Invalid inputs,please check again",422))
+        } 
+        
+        const {user_role} = req.userData
+        if(user_role !== "admin") {
+            return next(new HttpError("Access Denied", 402));
+        }
             const {
                 title, 
                 description, 
@@ -71,6 +75,11 @@ export const addJob = async( req, res, next) => {
                 keyword, 
                 workMode
             } = req.body  
+
+            const existingCompany = await Company.findById(company);
+            if (!existingCompany) {
+                return next(new HttpError("Company not found", 404));
+            } 
             
             const addedJob = await new Job({
                 title,
