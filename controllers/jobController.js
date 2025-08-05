@@ -1,6 +1,7 @@
 import { validationResult } from "express-validator";
 import HttpError from '../middlewares/httpError.js';
 import Job from '../models/jobs.js'
+import Company from "../models/company.js";
 
 //list
 export const listJob = async (req, res, next) => {
@@ -84,7 +85,7 @@ export const addJob = async( req, res, next) => {
             const addedJob = await new Job({
                 title,
                 description,
-                company,
+                company: existingCompany._id,
                 location,
                 jobType,
                 salary,
@@ -201,7 +202,7 @@ export const searchJob = async(req, res, next) => {
         let query = {};
 
         if (title) {
-        query.title = { $regex: title, $options: "i" }; // fuzzy search
+        query.title = { $regex: title, $options: "i" };
         }
 
         if(location) {
@@ -226,7 +227,7 @@ export const searchJob = async(req, res, next) => {
 
         res.status(200).json({
             status: true,
-            message: "Jobs fetched successfully",
+            message: "Job fetched successfully",
             data: results,
         });
     } catch (err) {
