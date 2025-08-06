@@ -47,7 +47,7 @@ export const createApplication = async (req, res, next) => {
         });
     } catch (err) {
         console.error("Create Application error:", err);
-        return next(new HttpError("Failed to submitted", 500));
+        return next(new HttpError("Failed to submit", 500));
     }
 };
 
@@ -91,7 +91,7 @@ export const listApplication = async(req, res, next) => {
     try{
         const {user_role} = req.userData;
         if (user_role !== "admin") {
-            return next(new HttpError("Only admins have access to view", 422));
+            return next(new HttpError("Only admins have access to list", 403));
          }
 
         const listedApplications = await Application.find()
@@ -103,10 +103,11 @@ export const listApplication = async(req, res, next) => {
             path: "job",
             select: "title company"
          }])
+        .sort({createdAt: -1});
 
-         if(!listedApplications) {
+        if(listedApplications.length === 0) {
             return next(new HttpError("No applications found", 404));
-         }
+        }
 
         res.status(200).json({
             status: true,
@@ -114,7 +115,72 @@ export const listApplication = async(req, res, next) => {
             data: listedApplications
         });
 
-    } catch(err) {
+    } catch (err) {
+        console.error("failed to list application", err);
         return next(new HttpError("Failed to fetch application details", 500));
     }
-}
+};
+
+//edit status
+export const editApplicationStatus = async (req, res, next) => {
+    try{
+        const {id} = req.params;
+        const {user_role} = req.userData;
+        const {status} = req.body;
+
+        if (user_role !== "admin") {
+            return next(new HttpError("Only admins can edit status", 403));
+        }
+
+        if (!status) {
+            return next(new HttpError("Status required", 400));
+        }
+
+        const allowedStatuses = ["applied", "under review", "rejected", "selected"]
+        if(!allowedStatuses.includes(status)) {
+            return next(new HttpError(`Invalid status. Allowed: ${allowedStatuses.join(", ")}`, 422));
+        }
+
+        const updatedApplication = await Application.findByIdAndUpdate(
+            id,
+            { status },
+            { new: true, runValidators: true }
+        ).select("status user job");
+
+        if (!updatedApplication) {
+            return next(new HttpError("Application not found", 404));
+        }
+
+        res.status(200).json({
+            status: true,
+            message: "Application status updated",
+            data: updatedApplication,
+        });
+
+    } catch(err) {
+        console.error("Error updating application status:", err);
+        return next(new HttpError("Failed to update application status", 500));
+    }
+};
+
+//delete
+export const deleteApplication = async (req, res, next) => {
+    try{
+        const {id} = req.params;
+        
+        const del = await Application.findOneAndDelete({_id: id})
+
+        if(!del) {
+            return next(new HttpError("Job not found", 404));
+        }
+
+        res.status(202).json({
+            status: true,
+            message: "successfully deleted",
+            data: ""
+        })
+
+    } catch(err) {
+        return next(new HttpError("Error deleting Job", 500));
+    }
+};
