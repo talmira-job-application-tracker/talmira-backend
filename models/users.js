@@ -35,6 +35,15 @@ const userSchema = new mongoose.Schema({
         required: true,
         unique: true,
     },
+    skills: {
+        type: [String],
+        default: [],
+    },
+    interests: {
+        type: [String],
+        default: [],
+    },
+
     isDeleted: {
         type: Boolean,
         default: false
