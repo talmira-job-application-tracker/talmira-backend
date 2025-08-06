@@ -1,44 +1,75 @@
 import multer from "multer";
-import path from "path"
-import fs from "fs"
+import path from "path";
+import fs from "fs";
 
-// Get full absolute path to /uploads folder inside your project
-const uploadPath = path.join(process.cwd(), 'uploads');
+// Base uploads folder
+const baseUploadPath = path.join(process.cwd(), 'uploads');
 
-// Make sure the uploads folder exists
-if (!fs.existsSync(uploadPath)) {
-    fs.mkdirSync(uploadPath);
+// Ensure base folder exists
+if (!fs.existsSync(baseUploadPath)) {
+    fs.mkdirSync(baseUploadPath);
 }
 
+// Multer disk storage config
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, 'uploads/');
+        let subfolder = 'others';
+
+        if (file.fieldname === 'logo') {
+            subfolder = 'logos';
+        } else if (file.fieldname === 'resume') {
+            subfolder = 'resumes';
+        }
+
+        const finalPath = path.join(baseUploadPath, subfolder);
+
+        // Ensure subfolder exists
+        if (!fs.existsSync(finalPath)) {
+            fs.mkdirSync(finalPath, { recursive: true });
+        }
+
+        cb(null, finalPath);
     },
     filename: (req, file, cb) => {
-        // generate unique string
         const uniqueName = Date.now() + '-' + Math.round(Math.random() * 1e9);
         const extension = path.extname(file.originalname);
         cb(null, file.fieldname + '-' + uniqueName + extension);
     }
-})
+});
 
-// file-filtering
-const fileFilter = (req, file, cb)=> {
-    // const allowedTypes = ['/image/jpeg', 'image/png', 'image/jpg'];
-    // if(allowedTypes.includes(file.mimetype)) {`
-    if(file.mimetype.startsWith('image/')){
+// File filter for images (logos)
+const imageFilter = (req, file, cb) => {
+    if (file.mimetype.startsWith('image/')) {
         cb(null, true);
     } else {
-        cb(new Error('only jpeg, jpg, png files can be uploaded'), false);
+        cb(new Error('Only image files (jpeg, png, etc.) are allowed'), false);
     }
 };
 
+// File filter for resumes
+const resumeFilter = (req, file, cb) => {
+    const allowedMimeTypes = [
+        'application/pdf',
+        'application/msword',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document' // .docx
+    ];
 
-// initialize multer 
-const upload = multer({
+    if (allowedMimeTypes.includes(file.mimetype)) {
+        cb(null, true);
+    } else {
+        cb(new Error('Only PDF, DOC, and DOCX files are allowed'), false);
+    }
+};
+
+// Exported upload handlers
+export const uploadLogo = multer({
     storage: storage,
-    fileFilter: fileFilter,
-    limits: { fileSize: 10 * 1024 *1024}
+    fileFilter: imageFilter,
+    limits: { fileSize: 5 * 1024 * 1024 } // 5 MB
 });
 
-export default upload;
+export const uploadResume = multer({
+    storage: storage,
+    fileFilter: resumeFilter,
+    limits: { fileSize: 10 * 1024 * 1024 } // 10 MB
+});

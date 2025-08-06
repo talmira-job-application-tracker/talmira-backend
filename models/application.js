@@ -1,15 +1,13 @@
-
-
 import mongoose from 'mongoose';
 
 const applicationSchema = new mongoose.Schema(
   {
-    userId: {
+    user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
       required: true,
     },
-    jobId: {
+    job: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Job',
       required: true,
@@ -27,6 +25,11 @@ const applicationSchema = new mongoose.Schema(
       type: String, 
       required: true,
     },
+    contactInfo: {
+      name: String,
+      email: String,
+      phone: String
+    }
   },
   { timestamps: true }
 );

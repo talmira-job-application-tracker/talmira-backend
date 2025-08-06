@@ -6,6 +6,7 @@ import authRouter from './routes/authRoute.js'
 import userRouter from './routes/userRoutes.js'
 import jobRouter from './routes/jobRoute.js'
 import companyRouter from './routes/companyRoute.js'
+import applicationRouter from './routes/applicationRoute.js'
 
 dotenv.config()
 
@@ -23,6 +24,7 @@ app.use('/api/auth', authRouter)
 app.use('/api/user',userRouter)
 app.use('/api/job', jobRouter)
 app.use('/api/company', companyRouter)
+app.use('/api/application', applicationRouter)
 
 
 // Custom error handler
