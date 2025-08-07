@@ -4,7 +4,6 @@ import { addCompany, deleteCompany, editCompanyProfile, listCompanies, searchCom
 
 
 const companyRouter = Router()
-
 companyRouter.use(userAuthCheck)
 
 companyRouter.post('/addcompany', addCompany)
