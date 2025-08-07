@@ -47,7 +47,11 @@ const userSchema = new mongoose.Schema({
     isDeleted: {
         type: Boolean,
         default: false
-    }
+    },
+    receivenotification: {
+        type: Boolean,
+        default:true
+    },
 },
     {
     timestamps: true
