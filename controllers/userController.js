@@ -5,8 +5,6 @@ import User from "../models/users.js";
 export const viewProfile = async (req, res, next) => {
   try {
     const userId = req.userData.user_id;
-
-
     // Gets the user ID from the authenticated token
 
     const user = await User.findById(userId).select('-password');
@@ -30,22 +28,28 @@ export const viewProfile = async (req, res, next) => {
 export const editProfile = async(req,res,next) => {
   try{
      const userId = req.userData.user_id; 
-     
-     const { name, email,  age, phone } = req.body;
+     const { name, email,  age, phone, skills, interests } = req.body;
+     const imagePath = req.file ? `/uploads/others/${req.file.filename}` : null; 
+
 
      const updatedData = {
       name,
       email,
       age,
-      phone
+      phone,
+      skills,
+      interests
     };
+    if (imagePath) {
+      updatedData.image = imagePath
+    }
 
     const updatedUser = await User.findByIdAndUpdate(
       userId,
       updatedData,
       { new: true }
     )
-    .select("-password"); 
+    const safeUser = await User.findById(updatedUser._id).select('-password -receivenotification');
     
      if (!updatedUser) {
       return next(new HttpError("User not found", 404));
@@ -54,7 +58,7 @@ export const editProfile = async(req,res,next) => {
       res.status(200).json({
       status: true,
       message: "Profile updated successfully",
-      data: updatedUser
+      data: safeUser
     });
 
   } catch (error) {

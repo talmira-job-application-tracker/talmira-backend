@@ -14,22 +14,25 @@ const alertSchema = new mongoose.Schema({
         type: String, 
         default: '',
     },
-
+    message: {
+        type: String,
+        required: true,
+    },
+    jobId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Job',
+        required: true,
+    },
     isActive: {
         type: Boolean,
         default: true,
     },
-
     skills: {
         type: [String],
         default: [],
     },
-  
-    createdAt: {
-        type: Date,
-        default: Date.now,
-    },
-})
+}, { timestamps: true }); 
+
 
 const Alert = mongoose.model('Alert', alertSchema);
 export default Alert;
