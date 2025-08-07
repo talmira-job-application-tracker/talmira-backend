@@ -1,6 +1,6 @@
+import dotenv from 'dotenv'
 import express from 'express'
 import cors from 'cors'
-import dotenv, { config } from 'dotenv'
 import connectDB from './database/connectDB.js'
 import authRouter from './routes/authRoute.js'
 import userRouter from './routes/userRoutes.js'
@@ -9,6 +9,8 @@ import companyRouter from './routes/companyRoute.js'
 import applicationRouter from './routes/applicationRoute.js'
 
 dotenv.config()
+console.log("Email Host:", process.env.EMAIL_HOST); // should print sandbox.smtp.mailtrap.io
+
 
 const app = express()
 const PORT = process.env.PORT || 8000;

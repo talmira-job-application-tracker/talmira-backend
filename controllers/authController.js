@@ -7,20 +7,20 @@ import jwt from "jsonwebtoken";
 //register
 export const registerUser = async (req, res, next) => {
     try{
-        // const errors = validationResult(req);
-        // console.log('validation errors:',errors);
+        const errors = validationResult(req);
+        console.log('validation errors:',errors);
 
-        // if(!errors.isEmpty()) {
-        //     return next(new HttpError("Invalid inputs passed, please check again", 422))
-        // } else {
+        if(!errors.isEmpty()) {
+            return next(new HttpError("Invalid inputs passed, please check again", 422))
+        } else {
             const { name, email, role, password, age, phone } = req.body
             const skills = Array.isArray(req.body.skills)
-                ? req.body.skills
-                : req.body.skills.split(',').map(s => s.trim().toLowerCase());
+            ? req.body.skills
+            : req.body.skills.split(',').map(s => s.trim().toLowerCase());
 
-                const interests = Array.isArray(req.body.interests)
-                ? req.body.interests
-                : req.body.interests.split(',').map(i => i.trim().toLowerCase());
+            const interests = Array.isArray(req.body.interests)
+            ? req.body.interests
+            : req.body.interests.split(',').map(i => i.trim().toLowerCase());
             const imagePath = req.file ? `/uploads/others/${req.file.filename}` : '/uploads/default-profile-pic.png';
 
 
@@ -65,7 +65,7 @@ export const registerUser = async (req, res, next) => {
                         }
                     })
                 }
-            // }
+            }
         }
     } catch (err) {
         console.error("Register Error:", err);
