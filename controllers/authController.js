@@ -13,6 +13,7 @@ export const registerUser = async (req, res, next) => {
         if(!errors.isEmpty()) {
             return next(new HttpError("Invalid inputs passed, please check again", 422))
         } else {
+
             const { name, email, role, password, age, phone } = req.body
             const skills = Array.isArray(req.body.skills)
             ? req.body.skills
@@ -21,8 +22,8 @@ export const registerUser = async (req, res, next) => {
             const interests = Array.isArray(req.body.interests)
             ? req.body.interests
             : req.body.interests.split(',').map(i => i.trim().toLowerCase());
-            const imagePath = req.file ? `/uploads/others/${req.file.filename}` : '/uploads/default-profile-pic.png';
 
+            const imagePath = req.file ? `/uploads/others/${req.file.filename}` : '/uploads/default-profile-pic.png';
 
             const userExists = await User.findOne({ email });
             if(userExists) {
