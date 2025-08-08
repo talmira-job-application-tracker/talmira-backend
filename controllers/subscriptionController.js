@@ -1,30 +1,42 @@
 import HttpError from "../middlewares/httpError.js";
 import Subscription from "../models/subscription.js";
 
-//create subscription
-export const subscribeToCompany = async (req, res, next) => {
-    try {
-        const {companyId} = req.params;
-        const userId = req.userData.user_id;
+// //create subscription
+// export const subscribeToCompany = async (req, res, next) => {
+//     try {
+//         const {companyId} = req.params;
+//         const userId = req.userData.user_id;
 
-        const exists = await Subscription.findOne({userId, companyId})
-        if (exists) {
-            return next(new HttpError("Already subscribed",409));
-        }
+//         const exists = await Subscription.findOne({userId, companyId, isActive: true})
+//         if (exists) {
+//             return next(new HttpError("Already subscribed",409));
+//         }
 
-        const subscription = await Subscription.create({userId, companyId})
-        res.status(201).json({ 
-            status: true,
-            message: "Subscribed successfully", 
-            data: subscription
-        });
-    } catch (err){
-        console.error("Subscribe error", err);
-        next(new HttpError("Subscription failed", 500));
-    }
-};
+//         const inactiveSub = await Subscription.findOne({ userId, companyId, isActive: false });
+//         if (inactiveSub) {
+//             inactiveSub.isActive = true;
+//             await inactiveSub.save();
 
-//admin list all users under each company
+//             return res.status(200).json({
+//                 status: true,
+//                 message: "Subscription reactivated successfully",
+//                 data: inactiveSub
+//             });
+//         }
+
+//         const subscription = await Subscription.create({userId, companyId})
+//         res.status(201).json({ 
+//             status: true,
+//             message: "Subscribed successfully", 
+//             data: subscription
+//         });
+//     } catch (err){
+//         console.error("Subscribe error", err);
+//         next(new HttpError("Subscription failed", 500));
+//     }
+// };
+
+//admin list all subs-users under each company
 export const subscribedUsers = async (req , res, next) => {
     try{
         const {user_role} = req.userData
@@ -34,7 +46,7 @@ export const subscribedUsers = async (req , res, next) => {
             return next(new HttpError("Only admins can view", 403));
         }
 
-        const subscribers = await Subscription.find({companyId})
+        const subscribers = await Subscription.find({companyId, isActive: true})
         .populate("userId", "name email");
 
         res.status(200).json({
@@ -54,8 +66,10 @@ export const subscribedCompanies = async (req, res, next) => {
     try{
         const {user_id} = req.userData;
 
-        const subscriptions = await Subscription.find({userId: user_id})
-        .populate("companyId", "name email");
+        const subscriptions = await Subscription.find({userId: user_id, isActive: true})
+        .populate("companyId", "name email -_id");
+
+         const companies = subscriptions.map(sub => sub.companyId);
 
         res.status(200).json({
             status: true,
@@ -66,5 +80,64 @@ export const subscribedCompanies = async (req, res, next) => {
         return next(new HttpError("Error fetching list", 500));
     }
 }
+
+//toggle subscription (subscribe/unsubscribe)
+export const toggleSubscription = async (req, res, next) => {
+    try {
+        const { companyId } = req.params;
+        const userId = req.userData.user_id;
+
+        let subscription = await Subscription.findOne({ userId, companyId });
+
+        // If no record exists create and subscribe
+        if (!subscription) {
+            subscription = await Subscription.create({
+                userId,
+                companyId,
+                isActive: true,
+                subscribedAt: new Date()
+            });
+
+            return res.status(201).json({
+                status: true,
+                action: "subscribed",
+                message: "Subscribed successfully",
+                data: subscription
+            });
+        }
+
+        // If already active unsubscribe
+        if (subscription.isActive) {
+            subscription.isActive = false;
+            subscription.unsubscribedAt = new Date();
+            await subscription.save();
+
+            return res.status(200).json({
+                status: true,
+                action: "unsubscribed",
+                message: "Unsubscribed successfully"
+            });
+        }
+
+        // If inactive resubscribe
+        subscription.isActive = true;
+        subscription.subscribedAt = new Date();
+        subscription.unsubscribedAt = null;
+        await subscription.save();
+
+        return res.status(200).json({
+            status: true,
+            action: "resubscribed",
+            message: "Subscribed successfully",
+            data: subscription
+        });
+
+    } catch (err) {
+        console.error("Toggle subscription error", err);
+        next(new HttpError("Subscription toggle failed", 500));
+    }
+};
+
+
 
 

@@ -86,7 +86,7 @@ export const deleteCompany = async (req,res,next) => {
   try{
     const role = req.userData.user_role
     if (role !== 'admin') {
-      return next (new HttpError('Unauthorised Access,only admin can delete!',403))
+      return next (new HttpError('Unauthorized Access,only admin can delete!',403))
     }
     const companyId = req.params.id;
     const company = await Company.findByIdAndUpdate(
