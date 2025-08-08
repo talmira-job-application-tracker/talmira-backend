@@ -7,8 +7,12 @@ import User from '../models/users.js';
 export const listAlerts = async (req, res, next) => {
   try {
     const userId = req.userData.user_id;
+    console.log(req.userData)
 
-    const alerts = await Alert.find({ userId }).sort({ createdAt: -1 });
+    const alerts = await Alert.find({
+       userId,
+      isDeleted: false 
+     }).sort({ createdAt: -1 });
 
     if (!alerts || alerts.length === 0) {
       return res.status(200).json({
@@ -32,35 +36,65 @@ export const listAlerts = async (req, res, next) => {
 };
 
 
-// toggleNotification
-export const toggleReceiveNotification = async (req, res, next) => {
-  try {
-    const userId = req.userData.user_id;
 
-    const user = await User.findById(userId);
-    if (!user) {
-      return next(new HttpError('User not found', 404));
-    }
-
-    user.receivenotification = !user.receivenotification;
-    await user.save();
-
-    res.status(200).json({
-      status: true,
-      message: `Notifications ${user.receivenotification ? 'enabled' : 'disabled'} successfully`,
-      data: user.receivenotification,
-    });
-  } catch (err) {
-    console.error('Toggle notification error:', err);
-    return next(new HttpError('Failed to update notification setting', 500));
-  }
-};
 
 //delete alerts
 export const deleteAlert = async (req,res,next) => {
     try{
+      const userId = req.userData.user_id;
+      const alertId = req.params.id
 
-    } catch {
+      const deletedAlert = await Alert.findOneAndUpdate(
+      { _id: alertId, userId: userId }, 
+      { isDeleted: true },
+      { new: true }
+    );
+
+
+      if (!deletedAlert) {
+        return next(new HttpError("Alert not found or not yours", 404));
+      } else {
+        res.status(200).json({
+          status:true,
+          message:'Alert deleted Successfully!',
+           data: deletedAlert
+        })
+      }
+
+    } catch (err) {
+      console.error(err)
+      return next (new HttpError('Fialed to delete alert',500))
         
     }
 }
+
+// viewUnreadAlerts
+export const viewUnreadAlerts = async (req, res, next) => {
+  try {
+    const userId = req.userData.user_id;
+
+    const unreadAlerts = await Alert.find({
+      userId,
+      isRead: false,
+      isDeleted: false ,
+    }).sort({ createdAt: -1 });
+
+    //mark them as read
+
+    if (unreadAlerts.length > 0) {
+      await Alert.updateMany(
+        { userId, isRead: false },
+        { $set: { isRead: true } }
+      );
+    }
+
+    res.status(200).json({
+      success: true,
+      count: unreadAlerts.length,
+      alerts: unreadAlerts
+    });
+
+  } catch (err) {
+    next(new HttpError("Failed to fetch unread alerts", 500));
+  }
+};

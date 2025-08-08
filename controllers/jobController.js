@@ -83,10 +83,12 @@ export const addJob = async (req, res, next) => {
       workMode,
     } = req.body;
 
-    const existingCompany = await Company.findById(company);
+   
+    const existingCompany = await Company.findOne({ _id: company, isDeleted: false });
     if (!existingCompany) {
-      return next(new HttpError("Company not found", 404));
+      return next(new HttpError("Company not found or is deleted", 404));
     }
+
 
     const jobKeywords = Array.isArray(keyword)
       ? keyword.map(k => k.trim().toLowerCase())
