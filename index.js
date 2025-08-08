@@ -7,7 +7,11 @@ import userRouter from './routes/userRoutes.js'
 import jobRouter from './routes/jobRoute.js'
 import companyRouter from './routes/companyRoute.js'
 import applicationRouter from './routes/applicationRoute.js'
+<<<<<<< Updated upstream
 import subscriptionRouter from './routes/subscriptionRoute.js'
+=======
+import alertRoute from './routes/notificationRoute.js'
+>>>>>>> Stashed changes
 
 dotenv.config()
 console.log("Email Host:", process.env.EMAIL_HOST); // should print sandbox.smtp.mailtrap.io
@@ -28,7 +32,11 @@ app.use('/api/user',userRouter)
 app.use('/api/job', jobRouter)
 app.use('/api/company', companyRouter)
 app.use('/api/application', applicationRouter)
+<<<<<<< Updated upstream
 app.use('/api/subscription', subscriptionRouter)
+=======
+app.use('/api/alerts',alertRoute)
+>>>>>>> Stashed changes
 
 
 // Custom error handler

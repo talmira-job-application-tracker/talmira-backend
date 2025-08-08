@@ -4,8 +4,9 @@ import Company from "../models/company.js";
 //addcompany
 export const addCompany = async (req, res, next) => {
   try {
-    const { name, industry, description, location, website,logo } = req.body;
+    const { name, industry, description, location, website, logo } = req.body;
     const role = req.userData.user_role;
+    
 
     if (role !== 'admin') {
       return res.status(403).json({ message: 'Only admins can add companies' });
@@ -15,13 +16,15 @@ export const addCompany = async (req, res, next) => {
       return next(new HttpError("Required fields missing", 400));
     }
 
+  
+    const logoPath = req.file ? `/uploads/logos/${req.file.filename}` : null;
     const newCompany = new Company({
       name,
       industry,
       description,
       location,
       website,
-      logo
+      logo: logoPath
     });
 
     await newCompany.save();
@@ -49,7 +52,8 @@ export const editCompanyProfile = async (req,res,next) => {
     }
     const companyId = req.params.id;
      
-    const { name, industry, description, location, website,logo } = req.body;
+    const { name, industry, description, location, website } = req.body;
+    const logoPath = req.file ? `/uploads/logos/${req.file.filename}` : null;
 
     const company = await Company.findById(companyId);
       if (!company) {
@@ -60,7 +64,7 @@ export const editCompanyProfile = async (req,res,next) => {
         company.description = description || company.description;
         company.location = location || company.location;
         company.website = website || company.website;
-        company.logo = logo || company.logo;
+        company.logo = logoPath || company.logo;
         
         await company.save()
 

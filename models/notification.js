@@ -23,13 +23,14 @@ const alertSchema = new mongoose.Schema({
         ref: 'Job',
         required: true,
     },
-    isActive: {
+    isRead: {
+        type: Boolean,
+        default: false, 
+    },
+
+    isActive: {        //for toggle
         type: Boolean,
         default: true,
-    },
-    skills: {
-        type: [String],
-        default: [],
     },
 }, { timestamps: true }); 
 

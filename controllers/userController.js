@@ -7,7 +7,7 @@ export const viewProfile = async (req, res, next) => {
     const userId = req.userData.user_id;
     // Gets the user ID from the authenticated token
 
-    const user = await User.findById(userId).select('-password');
+    const user = await User.findById(userId).select('-password -receivenotification');
     // Fetches user info from DB but hides the password
 
     if (!user) {
@@ -76,7 +76,7 @@ export const listAllProfile = async (req, res, next) => {
       return next(new HttpError("You are not authorized to view this page", 403));
     }
 
-    const users = await User.find().select('-password');
+    const users = await User.find().select('-password -receivenotification' );
 
     if (!users || users.length === 0) {
       return next(new HttpError('No users found', 404));
