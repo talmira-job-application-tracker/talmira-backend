@@ -32,20 +32,15 @@ authRouter.post('/register', uploadLogo.single('image'),[
         .isInt({ min: 0 }).withMessage("Age must be a positive number"),
 
     check("skills")
-        .optional()
-        .isArray().withMessage("Skills must be an array of strings"),
+        .optional(),
 
     check("interests")
-        .optional()
-        .isArray().withMessage("Interests must be an array of strings"),
+        .optional(),
 
-    check("receivenotification")
+    check("receiveNotification")
         .optional()
-        .isBoolean().withMessage("receivenotification must be true or false"),
+        .isBoolean().withMessage("receiveNotification must be true or false"),
 
-    check("image")
-        .notEmpty().withMessage("Image required")
-        
 ], registerUser);
 authRouter.post('/login', loginUser);
 

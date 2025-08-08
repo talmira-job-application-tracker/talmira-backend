@@ -10,11 +10,8 @@ import applicationRouter from './routes/applicationRoute.js'
 import subscriptionRouter from './routes/subscriptionRoute.js'
 import alertRoute from './routes/notificationRoute.js'
 
-
-
 dotenv.config()
 console.log("Email Host:", process.env.EMAIL_HOST); // should print sandbox.smtp.mailtrap.io
-
 
 const app = express()
 const PORT = process.env.PORT || 8000;
@@ -33,8 +30,6 @@ app.use('/api/company', companyRouter)
 app.use('/api/application', applicationRouter)
 app.use('/api/subscription', subscriptionRouter)
 app.use('/api/alerts',alertRoute)
-
-
 
 // Custom error handler
 app.use((error, req, res, next) => {

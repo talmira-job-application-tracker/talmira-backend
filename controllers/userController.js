@@ -4,11 +4,11 @@ import User from "../models/users.js";
 // View Profile
 export const viewProfile = async (req, res, next) => {
   try {
-    const userId = req.userData.user_id;
     // Gets the user ID from the authenticated token
+    const userId = req.userData.user_id;
 
-    const user = await User.findById(userId).select('-password -receivenotification');
     // Fetches user info from DB but hides the password
+    const user = await User.findById(userId).select('-password -receiveNotification');
 
     if (!user) {
       return next(new HttpError("User not found", 404));
@@ -49,7 +49,7 @@ export const editProfile = async(req,res,next) => {
       updatedData,
       { new: true }
     )
-    const safeUser = await User.findById(updatedUser._id).select('-password -receivenotification');
+    const safeUser = await User.findById(updatedUser._id).select('-password -receiveNotification');
     
      if (!updatedUser) {
       return next(new HttpError("User not found", 404));
@@ -76,7 +76,7 @@ export const listAllProfile = async (req, res, next) => {
       return next(new HttpError("You are not authorized to view this page", 403));
     }
 
-    const users = await User.find().select('-password -receivenotification' );
+    const users = await User.find().select('-password -receiveNotification' );
 
     if (!users || users.length === 0) {
       return next(new HttpError('No users found', 404));
@@ -115,7 +115,7 @@ export const deleteUserProfile = async (req,res,next) => {
 }
 
 // toggleNotification
-export const toggleReceiveNotification = async (req, res, next) => {
+export const togglereceiveNotification = async (req, res, next) => {
   try {
     const userId = req.userData.user_id;
 
@@ -124,13 +124,13 @@ export const toggleReceiveNotification = async (req, res, next) => {
       return next(new HttpError('User not found', 404));
     }
 
-    user.receivenotification = !user.receivenotification;
+    user.receiveNotification = !user.receiveNotification;
     await user.save();
 
     res.status(200).json({
       status: true,
-      message: `Notifications ${user.receivenotification ? 'enabled' : 'disabled'} successfully`,
-      data: user.receivenotification,
+      message: `Notifications ${user.receiveNotification ? 'enabled' : 'disabled'} successfully`,
+      data: user.receiveNotification,
     });
   } catch (err) {
     console.error('Toggle notification error:', err);
