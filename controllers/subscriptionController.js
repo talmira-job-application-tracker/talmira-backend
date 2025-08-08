@@ -1,41 +1,6 @@
 import HttpError from "../middlewares/httpError.js";
 import Subscription from "../models/subscription.js";
 
-// //create subscription
-// export const subscribeToCompany = async (req, res, next) => {
-//     try {
-//         const {companyId} = req.params;
-//         const userId = req.userData.user_id;
-
-//         const exists = await Subscription.findOne({userId, companyId, isActive: true})
-//         if (exists) {
-//             return next(new HttpError("Already subscribed",409));
-//         }
-
-//         const inactiveSub = await Subscription.findOne({ userId, companyId, isActive: false });
-//         if (inactiveSub) {
-//             inactiveSub.isActive = true;
-//             await inactiveSub.save();
-
-//             return res.status(200).json({
-//                 status: true,
-//                 message: "Subscription reactivated successfully",
-//                 data: inactiveSub
-//             });
-//         }
-
-//         const subscription = await Subscription.create({userId, companyId})
-//         res.status(201).json({ 
-//             status: true,
-//             message: "Subscribed successfully", 
-//             data: subscription
-//         });
-//     } catch (err){
-//         console.error("Subscribe error", err);
-//         next(new HttpError("Subscription failed", 500));
-//     }
-// };
-
 //admin list all subs-users under each company
 export const subscribedUsers = async (req , res, next) => {
     try{
