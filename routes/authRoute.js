@@ -42,6 +42,15 @@ authRouter.post('/register', uploadLogo.single('image'),[
         .isBoolean().withMessage("receiveNotification must be true or false"),
 
 ], registerUser);
-authRouter.post('/login', loginUser);
+authRouter.post('/login', 
+[
+    check("email")
+    .notEmpty().withMessage("Email is required")
+    .isEmail().withMessage("Invalid email format"),
+
+    check("password")
+    .notEmpty().withMessage('Password Required')
+    .isLength({ min: 6 }).withMessage("Password must be at least 6 characters"),
+], loginUser);
 
 export default authRouter

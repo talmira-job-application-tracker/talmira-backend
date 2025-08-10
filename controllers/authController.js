@@ -77,7 +77,10 @@ export const registerUser = async (req, res, next) => {
 //login
 export const loginUser = async ( req, res, next) => {
     try{
-
+         const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return next(new HttpError(errors.array()[0].msg, 422)); 
+        }
         const { email, password } = req.body;
         const user = await User.findOne({email});
 

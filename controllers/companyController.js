@@ -1,10 +1,19 @@
+import { validationResult } from "express-validator";
 import HttpError from "../middlewares/httpError.js";
 import Company from "../models/company.js";
 
 //addcompany
 export const addCompany = async (req, res, next) => {
   try {
+    
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return next(new HttpError(errors.array()[0].msg, 422));
+    }
+
     const { name, industry, description, location, website, logo } = req.body;
+   
+
     const role = req.userData.user_role;
     
 
@@ -38,6 +47,7 @@ export const addCompany = async (req, res, next) => {
     });
 
   } catch (err) {
+     console.error("Add Company Error:", err);
     return next(new HttpError('Failed to add company', 500));
   }
 };
@@ -45,6 +55,11 @@ export const addCompany = async (req, res, next) => {
 //update company
 export const editCompanyProfile = async (req,res,next) => {
     try{
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return next(new HttpError(errors.array()[0].msg, 422));
+    }
+
     const role = req.userData.user_role
     
     if (role !== 'admin') {

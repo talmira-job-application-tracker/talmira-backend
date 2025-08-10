@@ -170,9 +170,9 @@ export const addJob = async (req, res, next) => {
 //edit
 export const editJob = async (req, res, next) => {
     try{
-        const errors = validationResult(req)
-         if (!errors.isEmpty()) {
-            return next(new HttpError("Invalid input , please try again",422));
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+          return next(new HttpError(errors.array()[0].msg, 422));
         }
 
         const {id} = req.params
