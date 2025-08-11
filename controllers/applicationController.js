@@ -72,6 +72,12 @@ export const viewApplication = async (req, res, next) => {
             select: "title company"
          }])
 
+        if (getApplication.status !== 'under review') {
+        getApplication.status = 'under review';
+        await getApplication.save();
+        }
+
+
          if(!getApplication) {
             return next(new HttpError("Application not found", 404));
          }
@@ -137,7 +143,7 @@ export const editApplicationStatus = async (req, res, next) => {
             return next(new HttpError("Status required", 400));
         }
 
-        const allowedStatuses = ["applied", "under review", "rejected", "selected"]
+        const allowedStatuses = ["rejected", "selected"]
         if(!allowedStatuses.includes(status)) {
             return next(new HttpError(`Invalid status. Allowed: ${allowedStatuses.join(", ")}`, 422));
         }

@@ -28,8 +28,11 @@ const applicationSchema = new mongoose.Schema(
     contactInfo: {
       name: String,
       email: String,
-      phone: String,
-  
+      phone: String
+    },
+    isRead: {
+      type: Boolean,
+      default: false
     }
   },
   { timestamps: true }
