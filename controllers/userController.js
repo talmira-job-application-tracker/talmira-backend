@@ -25,12 +25,9 @@ export const viewProfile = async (req, res, next) => {
   }
 };
 
-<<<<<<< Updated upstream
-//editprofile
-=======
 //edit profile
->>>>>>> Stashed changes
 export const editProfile = async (req, res, next) => {
+  
   try {
     const errors = validationResult(req)
     if(!errors.isEmpty()){
