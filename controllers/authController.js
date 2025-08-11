@@ -11,7 +11,7 @@ export const registerUser = async (req, res, next) => {
         console.log('validation errors:',errors);
 
         if(!errors.isEmpty()) {
-            return next(new HttpError("Invalid inputs passed, please check again", 422))
+            return next(new HttpError(errors.array()[0].msg, 422));
         } else {
 
             const { name, email, role, password, age, phone } = req.body

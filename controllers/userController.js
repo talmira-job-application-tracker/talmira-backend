@@ -1,3 +1,4 @@
+import { validationResult } from "express-validator";
 import HttpError from "../middlewares/httpError.js";
 import User from "../models/users.js";
 
@@ -24,9 +25,18 @@ export const viewProfile = async (req, res, next) => {
   }
 };
 
+<<<<<<< Updated upstream
 //editprofile
+=======
+//edit profile
+>>>>>>> Stashed changes
 export const editProfile = async (req, res, next) => {
   try {
+    const errors = validationResult(req)
+    if(!errors.isEmpty()){
+      return next(new HttpError(errors.array()[0].msg, 422));
+    }
+    
     const userId = req.userData.user_id;
     const { name, email, age, phone, skills, interests } = req.body;
     const imagePath = req.file ? `/uploads/others/${req.file.filename}` : null;

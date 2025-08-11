@@ -62,7 +62,7 @@ export const addJob = async (req, res, next) => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return next(new HttpError("Invalid inputs, please check again", 422));
+      return next(new HttpError(errors.array()[0].msg, 422));
     }
 
     const { user_role } = req.userData;
