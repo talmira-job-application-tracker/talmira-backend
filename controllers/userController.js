@@ -24,47 +24,43 @@ export const viewProfile = async (req, res, next) => {
   }
 };
 
-//editprofile
-export const editProfile = async(req,res,next) => {
-  try{
-     const userId = req.userData.user_id; 
-     const { name, email,  age, phone, skills, interests } = req.body;
-     const imagePath = req.file ? `/uploads/others/${req.file.filename}` : null; 
+export const editProfile = async (req, res, next) => {
+  try {
+    const userId = req.userData.user_id;
+    const { name, email, age, phone, skills, interests } = req.body;
+    const imagePath = req.file ? `/uploads/others/${req.file.filename}` : null;
 
-
-     const updatedData = {
-      name,
-      email,
-      age,
-      phone,
-      skills,
-      interests
-    };
-    if (imagePath) {
-      updatedData.image = imagePath
-    }
+  
+    const updatedData = {};
+    if (name !== undefined) updatedData.name = name;
+    if (email !== undefined) updatedData.email = email;
+    if (age !== undefined) updatedData.age = age;
+    if (phone !== undefined) updatedData.phone = phone;
+    if (skills !== undefined) updatedData.skills = skills;
+    if (interests !== undefined) updatedData.interests = interests;
+    if (imagePath) updatedData.image = imagePath;
 
     const updatedUser = await User.findByIdAndUpdate(
       userId,
-      updatedData,
+      { $set: updatedData },
       { new: true }
-    )
-    const safeUser = await User.findById(updatedUser._id).select('-password -receiveNotification');
-    
-     if (!updatedUser) {
+    ).select('-password -receiveNotification');
+
+    if (!updatedUser) {
       return next(new HttpError("User not found", 404));
     }
 
-      res.status(200).json({
+    res.status(200).json({
       status: true,
       message: "Profile updated successfully",
-      data: safeUser
+      data: updatedUser
     });
 
   } catch (error) {
+    console.error(error); 
     return next(new HttpError("Server error", 500));
   }
-}
+};
 
 
 // listAllProfile
