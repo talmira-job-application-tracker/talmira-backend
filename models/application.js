@@ -28,7 +28,8 @@ const applicationSchema = new mongoose.Schema(
     contactInfo: {
       name: String,
       email: String,
-      phone: String
+      phone: String,
+  
     }
   },
   { timestamps: true }

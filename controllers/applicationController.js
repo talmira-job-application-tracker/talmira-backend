@@ -6,6 +6,7 @@ import HttpError from "../middlewares/httpError.js"
 //add
 export const createApplication = async (req, res, next) => {
     try{
+        
         const {id: job_id} = req.params;
         const {user_id} = req.userData;
         const resumePath = req.file.path
