@@ -24,6 +24,7 @@ export const viewProfile = async (req, res, next) => {
   }
 };
 
+//editprofile
 export const editProfile = async (req, res, next) => {
   try {
     const userId = req.userData.user_id;
@@ -111,7 +112,7 @@ export const deleteUserProfile = async (req,res,next) => {
 }
 
 // toggleNotification
-export const togglereceiveNotification = async (req, res, next) => {
+export const toggleReceiveNotification = async (req, res, next) => {
   try {
     const userId = req.userData.user_id;
 
