@@ -9,7 +9,42 @@ jobRouter.use(userAuthCheck)
 jobRouter.get('/list', listJob);
 jobRouter.get('/search', searchJob);
 jobRouter.get('/:id', viewJob);
-jobRouter.post('/add', addJob);
+
+jobRouter.post('/add', [
+  check("title")
+    .notEmpty().withMessage("Job title required"),
+
+  check("description")
+    .notEmpty().withMessage("Job description required"),
+
+  check("company")
+    .notEmpty().withMessage("Company ID required"),
+
+  check("location")
+    .notEmpty().withMessage("Location required"),
+
+  check("jobType")
+    .notEmpty().withMessage("Job type required")
+    .isIn(["Full-time", "Part-time", "Internship"]).withMessage("Must be either Full-time, Part-time, or Internship"),
+
+  check("salary")
+    .notEmpty().withMessage("Salary required"),
+
+  check("language")
+    .optional(),
+
+  check("qualification")
+    .notEmpty().withMessage("Qualification field required"),
+
+  check("keyword")
+    .optional(),
+
+  check("workMode")
+    .optional()
+    .isIn(["Hybrid", "On-Site", "Remote"]).withMessage("Invalid work mode"),
+], addJob);
+
+
 jobRouter.patch('/:id', 
 [
   check("title")

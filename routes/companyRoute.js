@@ -28,7 +28,32 @@ companyRouter.post('/addcompany', uploadLogo.single('logo'),
     //   .optional()
     //   .isString().withMessage("Logo must be a valid string"),
   ],  addCompany)
-companyRouter.patch('/editcompany/:id',  uploadLogo.single('logo'), editCompanyProfile)
+
+
+companyRouter.patch('/editcompany/:id',uploadLogo.single('logo'),
+  [
+    check("name")
+      .notEmpty().withMessage("Company name is required")
+      .trim(),
+
+    check("industry")
+      .notEmpty().withMessage("Industry is required"),
+
+    check("description")
+      .notEmpty().withMessage("Description is required"),
+
+    check("location")
+      .notEmpty().withMessage("Location is required"),
+
+    check("website")
+      .notEmpty().withMessage("Website is required"),
+
+    check("isDeleted")
+      .notEmpty().withMessage("isDeleted is required"),
+  ],
+  editCompanyProfile
+);
+
 companyRouter.delete('/deletecompany/:id',deleteCompany)
 companyRouter.get('/listallcompanies', listCompanies)
 companyRouter.get('/viewonecompany/:id',viewOneCompany)
