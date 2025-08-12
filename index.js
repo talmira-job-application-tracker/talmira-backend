@@ -29,7 +29,7 @@ app.use('/api/job', jobRouter)
 app.use('/api/company', companyRouter)
 app.use('/api/application', applicationRouter)
 app.use('/api/subscription', subscriptionRouter)
-app.use('/api/alerts',alertRoute)
+app.use('/api/alert',alertRoute)
 
 // Custom error handler
 app.use((error, req, res, next) => {

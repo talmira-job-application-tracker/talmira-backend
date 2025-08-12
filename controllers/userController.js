@@ -99,7 +99,7 @@ export const listAllProfile = async (req, res, next) => {
 //delete a profile
 export const deleteUserProfile = async (req,res,next) => {
   try{
-    const userId = req.params.id;
+    const userId = req.userData.user_id
     const user = await User.findOneAndUpdate(
       { _id: userId, isDeleted: false }, 
       { isDeleted: true },

@@ -51,7 +51,7 @@ userRouter.patch('/editprofile',uploadLogo.single('image'),
 );
 
 userRouter.get('/listallusers', listAllProfile)
-userRouter.delete('/deleteprofile/:id',deleteUserProfile)
+userRouter.delete('/deleteprofile',deleteUserProfile)
 userRouter.patch("/togglenotification",  toggleReceiveNotification);
 
 
