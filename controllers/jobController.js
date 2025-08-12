@@ -11,7 +11,32 @@ import Alert from "../models/notification.js";
 export const listJob = async (req, res, next) => {
 
     try{
-        const listedJobs = await Job.find()
+      const { title, location, jobType, workMode, keyword } = req.query;
+
+        let query = {};
+
+        if (title) {
+        query.title = { $regex: title, $options: "i" };
+        }
+
+        if(location) {
+            query.location = { $regex: location, $options: "i" }
+        }
+
+        if (jobType) {
+        query.jobType = jobType;
+        }
+
+        if (workMode) {
+        query.workMode = workMode;
+        }
+
+        if (keyword) {
+        query.keyword = { $regex: keyword, $options: "i" };
+        }
+
+
+        const listedJobs = await Job.find(query)
         .select("title description company location jobType salary language qualification keyword workMode")
         .populate({
             path: "company",
@@ -21,11 +46,12 @@ export const listJob = async (req, res, next) => {
 
         res.status(200).json({
             status: true,
-            message: "",
+            message: "Job fetched successfully",
             data: listedJobs,
         });
     } catch (err){
-        return next(new HttpError('Error fetching jobs', 500));
+      console.error("Search Job Error Stack:", err);
+      return next(new HttpError('Error fetching jobs', 500));
     }
 };
 
@@ -252,47 +278,5 @@ export const deleteJob = async(req, res, next) => {
 
     } catch (err) {
         return next(new HttpError("Error deleting Job", 500));
-    }
-};
-
-//search
-export const searchJob = async(req, res, next) => {
-    try{
-        const { title, location, jobType, workMode, keyword } = req.query;
-
-        let query = {};
-
-        if (title) {
-        query.title = { $regex: title, $options: "i" };
-        }
-
-        if(location) {
-            query.location = { $regex: location, $options: "i" }
-        }
-
-        if (jobType) {
-        query.jobType = jobType;
-        }
-
-        if (workMode) {
-        query.workMode = workMode;
-        }
-
-        if (keyword) {
-        query.keyword = { $regex: keyword, $options: "i" };
-        }
-
-        const results = await Job.find(query)
-        .select("title company location jobType salary workMode keyword")
-        .populate({ path: "company", select: "name" });
-
-        res.status(200).json({
-            status: true,
-            message: "Job fetched successfully",
-            data: results,
-        });
-    } catch (err) {
-        console.error("Search Job Error Stack:", err);
-        return next(new HttpError("Failed to search jobs", 500));
     }
 };
