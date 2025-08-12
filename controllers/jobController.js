@@ -176,7 +176,7 @@ export const addJob = async (req, res, next) => {
             message: `New job matches your skills/interests: ${title} at ${existingCompany.name}`,
             keywords: jobKeywords,
             location: location,
-            skills: [], // optional: you can add matched skills here
+            skills: [], //  add matched skills 
         });
     }
 

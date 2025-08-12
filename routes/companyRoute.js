@@ -1,6 +1,6 @@
 import { Router } from "express";
 import userAuthCheck from "../middlewares/authCheck.js";
-import { addCompany, deleteCompany, editCompanyProfile, listCompanies, searchCompanies, viewOneCompany } from "../controllers/companyController.js";
+import { addCompany, deleteCompany, editCompanyProfile, listCompanies,  viewOneCompany } from "../controllers/companyController.js";
 import { uploadLogo } from "../middlewares/upload.js";
 import { check } from "express-validator";
 
@@ -55,8 +55,8 @@ companyRouter.patch('/editcompany/:id',uploadLogo.single('logo'),
 );
 
 companyRouter.delete('/deletecompany/:id',deleteCompany)
-companyRouter.get('/listallcompanies', listCompanies)
+companyRouter.get('/listallcompanies', listCompanies)//also have search
 companyRouter.get('/viewonecompany/:id',viewOneCompany)
-companyRouter.get('/search',searchCompanies)
+
 
 export default companyRouter;

@@ -126,28 +126,51 @@ export const deleteCompany = async (req,res,next) => {
 }
 
 //list all companies
-export const  listCompanies = async (req,res,next) => {
-  try{
-    const role = req.userData.user_role
+export const listCompanies = async (req, res, next) => {
+  try {
+    const role = req.userData.user_role;
     if (role !== 'admin') {
-      return next (new HttpError("Unauthorised access!",403))
-    }
-    const companies = await Company.find({isDeleted:false})
-     if (companies.length === 0) {
-      return next(new HttpError("No companies found!", 404));
-    } else {
-      res.status(200).json({
-        status:true,
-        message:null,
-        data:companies,
-      })
+      return next(new HttpError("Unauthorised access!", 403));
     }
 
+    // search 
+    const name = req.query.name?.trim();
+    const industry = req.query.industry?.trim();
+    const location = req.query.location?.trim();
+
+    const query = { isDeleted: false };
+
+    if (name) {
+      query.name = { $regex: name, $options: 'i' }; // case-insensitive
+    }
+
+    if (industry) {
+      query.industry = { $regex: industry, $options: 'i' };
+    }
+
+    if (location) {
+      query.location = { $regex: location, $options: 'i' };
+    }
+
+    const companies = await Company.find(query);
+
+    if (companies.length === 0) {
+      return next(new HttpError("No companies found!", 404));
+    }
+
+    res.status(200).json({
+      status: true,
+      message: null,
+      data: companies,
+    });
+
   } catch (err) {
-    console.error(err)
+    console.error(err);
     return next(new HttpError("Failed to fetch companies", 500));
   }
-}
+};
+
+
 
 //view single company
 export const viewOneCompany = async (req,res,next) => {
@@ -174,44 +197,3 @@ export const viewOneCompany = async (req,res,next) => {
   }
 }
 
-//search companies
-export const searchCompanies = async (req,res,next) => {
-  try{
-    const role = req.userData.user_role;
-    if (role !== 'admin') {
-      return next (new HttpError('Unauthorised Access',403))
-    }
-    const name = req.query.name?.trim();
-    const industry = req.query.industry?.trim();
-    const location = req.query.location?.trim();
-
-     const query = {isDeleted: false};
-    
-     if (name) {
-      query.name = { $regex: name, $options: 'i'} //case in-sensitive match
-     }
-
-     if (industry) {
-      query.industry = {$regex : industry, $options: 'i'}
-     }
-
-     if (location) {
-      query.location = { $regex : location, $options: 'i'}
-     }
-     //console.log("Search Query: ", query);
-     const companies = await Company.find(query)
-     if (!companies || companies.length === 0) {
-        return next(new HttpError("No companies match your search", 404));
-     } else {
-      res.status(200).json({
-      status: true,
-      message: null,
-      data: companies,
-    });
-
-     }
-  } catch (err) {
-  console.error(err);
-  return next(new HttpError("Failed to search companies", 500));
-}
-}
