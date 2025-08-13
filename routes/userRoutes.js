@@ -1,5 +1,9 @@
 import express from 'express'
+<<<<<<< Updated upstream
 import { deleteUserProfile, editProfile,  listAllProfile,    toggleReceiveNotification,      viewProfile } from '../controllers/userController.js'
+=======
+import { deleteUserProfile, editProfile,  listAllProfile,    toggleReceiveNotification,    viewProfile } from '../controllers/userController.js'
+>>>>>>> Stashed changes
 import userAuthCheck from '../middlewares/authCheck.js'
 import { uploadLogo } from '../middlewares/upload.js'
 import { check } from 'express-validator'
@@ -51,7 +55,11 @@ userRouter.patch('/editprofile',uploadLogo.single('image'),
 );
 
 userRouter.get('/listallusers', listAllProfile)
+<<<<<<< Updated upstream
 userRouter.delete('/deleteprofile',deleteUserProfile)
+=======
+userRouter.delete('/deleteprofile/:id',deleteUserProfile)
+>>>>>>> Stashed changes
 userRouter.patch("/togglenotification",  toggleReceiveNotification);
 
 
