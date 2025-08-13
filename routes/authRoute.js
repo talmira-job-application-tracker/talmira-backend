@@ -19,10 +19,6 @@ authRouter.post('/register', uploadLogo.single('image'),[
         .notEmpty().withMessage("Password required")
         .isLength({ min: 6 }).withMessage("Must at least 6 characters"),
 
-    check("role")
-        .notEmpty().withMessage("Role is required")
-        .isIn(["admin", "user"]).withMessage("Role must be either admin or user"),
-
     check("phone")
         .notEmpty().withMessage("Phone number required")
         .matches(/^[0-9]{10}$/).withMessage("Phone must be a valid 10-digit number"),

@@ -14,7 +14,7 @@ export const registerUser = async (req, res, next) => {
             return next(new HttpError(errors.array()[0].msg, 422));
         } else {
 
-            const { name, email, role, password, age, phone } = req.body
+            const { name, email, password, age, phone } = req.body
             const skills = Array.isArray(req.body.skills)
             ? req.body.skills
             : req.body.skills.split(',').map(s => s.trim().toLowerCase());
@@ -35,7 +35,6 @@ export const registerUser = async (req, res, next) => {
                 const user = await new User({
                     name,
                     email, 
-                    role,
                     password: hashedPassword,
                     image: imagePath,
                     age,
