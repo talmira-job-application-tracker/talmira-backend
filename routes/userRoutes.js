@@ -55,11 +55,8 @@ userRouter.patch('/editprofile',uploadLogo.single('image'),
 );
 
 userRouter.get('/listallusers', listAllProfile)
-<<<<<<< Updated upstream
 userRouter.delete('/deleteprofile',deleteUserProfile)
-=======
-userRouter.delete('/deleteprofile/:id',deleteUserProfile)
->>>>>>> Stashed changes
+// userRouter.delete('/deleteprofile/:id',deleteUserProfile)
 userRouter.patch("/togglenotification",  toggleReceiveNotification);
 
 
