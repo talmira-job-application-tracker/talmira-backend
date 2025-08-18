@@ -128,22 +128,13 @@ export const toggleReceiveNotification = async (req, res, next) => {
       return next(new HttpError('User not found', 404));
     }
 
-<<<<<<< Updated upstream
     user.receiveNotification = !user.receiveNotification;
-=======
-    user.receivenotification = !user.receivenotification;
->>>>>>> Stashed changes
     await user.save();
 
     res.status(200).json({
       status: true,
-<<<<<<< Updated upstream
       message: `Notifications ${user.receiveNotification ? 'enabled' : 'disabled'} successfully`,
       data: user.receiveNotification,
-=======
-      message: `Notifications ${user.receivenotification ? 'enabled' : 'disabled'} successfully`,
-      data: user.receivenotification,
->>>>>>> Stashed changes
     });
   } catch (err) {
     console.error('Toggle notification error:', err);

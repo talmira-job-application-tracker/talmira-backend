@@ -1,9 +1,5 @@
 import express from 'express'
-<<<<<<< Updated upstream
-import { deleteUserProfile, editProfile,  listAllProfile,    toggleReceiveNotification,      viewProfile } from '../controllers/userController.js'
-=======
 import { deleteUserProfile, editProfile,  listAllProfile,    toggleReceiveNotification,    viewProfile } from '../controllers/userController.js'
->>>>>>> Stashed changes
 import userAuthCheck from '../middlewares/authCheck.js'
 import { uploadLogo } from '../middlewares/upload.js'
 import { check } from 'express-validator'
