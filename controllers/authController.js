@@ -69,6 +69,12 @@ export const registerUser = async (req, res, next) => {
         }
     } catch (err) {
         console.error("Register Error:", err);
+        
+        //check duplication
+        if (err.code === 11000) {
+        const field = Object.keys(err.keyValue)[0];
+        return next(new HttpError(`${field} already exists`, 400));
+    }
         return next(new HttpError("Process failed", 500));
     }
 };
