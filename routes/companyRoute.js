@@ -8,7 +8,7 @@ import { check } from "express-validator";
 const companyRouter = Router()
 companyRouter.use(userAuthCheck)
 
-companyRouter.post('/addcompany', uploadLogo.single('logo'),
+companyRouter.post('/add', uploadLogo.single('logo'),
     [
     check("name")
       .notEmpty().withMessage("Company name is required")
@@ -30,7 +30,7 @@ companyRouter.post('/addcompany', uploadLogo.single('logo'),
   ],  addCompany)
 
 
-companyRouter.patch('/editcompany/:id',uploadLogo.single('logo'),
+companyRouter.patch('/edit/:id',uploadLogo.single('logo'),
   [
     check("name")
       .notEmpty().withMessage("Company name is required")
@@ -54,9 +54,9 @@ companyRouter.patch('/editcompany/:id',uploadLogo.single('logo'),
   editCompanyProfile
 );
 
-companyRouter.delete('/deletecompany/:id',deleteCompany)
-companyRouter.get('/listallcompanies', listCompanies)//also have search
-companyRouter.get('/viewonecompany/:id',viewOneCompany)
+companyRouter.delete('/delete/:id',deleteCompany)
+companyRouter.get('/list', listCompanies)//also have search
+companyRouter.get('/view/:id',viewOneCompany)
 
 
 export default companyRouter;

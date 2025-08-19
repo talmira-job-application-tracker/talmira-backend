@@ -38,6 +38,7 @@ authRouter.post('/register', uploadLogo.single('image'),[
         .isBoolean().withMessage("receiveNotification must be true or false"),
 
 ], registerUser);
+
 authRouter.post('/login', 
 [
     check("email")
