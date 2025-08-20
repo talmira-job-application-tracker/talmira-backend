@@ -176,24 +176,30 @@ export const listCompanies = async (req, res, next) => {
 export const viewOneCompany = async (req,res,next) => {
   try{
     const role = req.userData.user_role;
-    if (role !== 'admin') {
-      return next (new HttpError('Unauthorized access',403))
-    }
     const companyId = req.params.id;
-    const company = await Company.findOne({_id: companyId, isDeleted: false})
-    if (!company ) {
-      return next (new HttpError('Company not found',404))
-    } else {
-      res.status(200).json({
-        status:true,
-        message:null,
-        data: company,
-      })
+
+    let query = Company.findOne({ _id: companyId, isDeleted: false });
+
+    if (role !== 'admin') {
+      query = query.select("name description location industry");
     }
+
+    const company = await query;
+
+    if (!company) {
+      return next(new HttpError('Company not found',404));
+    }
+
+    res.status(200).json({
+      status: true,
+      message: null,
+      data: company,
+    });
 
   } catch (err) {
     console.error(err)
-    return next (new HttpError('Failed to fetch company"',500))
+    return next (new HttpError('Failed to fetch company',500))
   }
 }
+
 
