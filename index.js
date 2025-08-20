@@ -9,6 +9,7 @@ import companyRouter from './routes/companyRoute.js'
 import applicationRouter from './routes/applicationRoute.js'
 import subscriptionRouter from './routes/subscriptionRoute.js'
 import alertRoute from './routes/notificationRoute.js'
+import cookieParser from 'cookie-parser'
 
 dotenv.config()
 console.log("Email Host:", process.env.EMAIL_HOST); // should print sandbox.smtp.mailtrap.io
@@ -21,7 +22,14 @@ connectDB()
 //middlewares
 app.use('/uploads', express.static('uploads'))
 app.use(express.json())
-app.use(cors())
+app.use(
+  cors({
+    origin: [process.env.FRONTEND_URL, process.env.FRONTEND_LIVE],
+    credentials: true,
+  })
+);
+
+app.use(cookieParser())
 
 app.use('/api/auth', authRouter)
 app.use('/api/user',userRouter)
