@@ -8,8 +8,8 @@ const userRouter = express.Router()
 
 userRouter.use(userAuthCheck)
 
-userRouter.get('/viewprofile',viewProfile)
-userRouter.patch('/editprofile',uploadLogo.single('image'),
+userRouter.get('/view',viewProfile)
+userRouter.patch('/edit',uploadLogo.single('image'),
   [
     check("name")
       .notEmpty().withMessage("Name is required")
@@ -50,9 +50,8 @@ userRouter.patch('/editprofile',uploadLogo.single('image'),
   editProfile
 );
 
-userRouter.get('/listallusers', listAllProfile)
-userRouter.delete('/deleteprofile',deleteUserProfile)
-// userRouter.delete('/deleteprofile/:id',deleteUserProfile)
+userRouter.get('/list', listAllProfile)
+userRouter.delete('/delete',deleteUserProfile)
 userRouter.patch("/togglenotification",  toggleReceiveNotification);
 
 

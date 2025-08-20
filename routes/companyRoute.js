@@ -23,10 +23,6 @@ companyRouter.post('/add', uploadLogo.single('logo'),
     check("website")
       .optional()
       .isURL().withMessage("Website must be a valid URL"),
-
-    // check("logo")
-    //   .optional()
-    //   .isString().withMessage("Logo must be a valid string"),
   ],  addCompany)
 
 
