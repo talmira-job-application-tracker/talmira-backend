@@ -31,11 +31,26 @@ export const editProfile = async (req, res, next) => {
   try {
     const errors = validationResult(req)
     if(!errors.isEmpty()){
-      return next(new HttpError(errors.array()[0].msg, 422));
+      console.log("Validation errors:", errors.array());
+      return res.status(422).json({ errors: errors.array() });
     }
     
     const userId = req.userData.user_id;
-    const { name, email, age, phone, skills, interests } = req.body;
+    const { name, email, age, phone} = req.body;
+
+    let skills = req.body.skills;
+    let interests = req.body.interests;
+    if (skills !== undefined) {
+      skills = Array.isArray(skills)
+        ? skills
+        : skills.split(",").map((s) => s.trim().toLowerCase());
+    }
+    if (interests !== undefined) {
+      interests = Array.isArray(interests)
+        ? interests
+        : interests.split(",").map((i) => i.trim().toLowerCase());
+    }
+    
     const imagePath = req.file ? `/uploads/others/${req.file.filename}` : null;
 
   
@@ -63,6 +78,8 @@ export const editProfile = async (req, res, next) => {
       message: "Profile updated successfully",
       data: updatedUser
     });
+    console.log("req.file:", req.file);
+    console.log("updatedData:", updatedData);
 
   } catch (error) {
     console.error(error); 

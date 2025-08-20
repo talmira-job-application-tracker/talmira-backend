@@ -9,43 +9,48 @@ const userRouter = express.Router()
 userRouter.use(userAuthCheck)
 
 userRouter.get('/view',viewProfile)
-userRouter.patch('/edit',uploadLogo.single('image'),
-  [
-    check("name")
-      .notEmpty().withMessage("Name is required")
-      .trim(),
+
+userRouter.patch("/edit",uploadLogo.single("image"),[
+    check("name").optional().trim(),
 
     check("email")
-      .notEmpty().withMessage("Email is required")
+      .optional()
       .isEmail().withMessage("Invalid email format"),
 
     check("role")
-      .notEmpty().withMessage("Role is required")
+      .optional()
       .isIn(["admin", "user"]).withMessage("Role must be admin or user"),
 
     check("age")
-      .notEmpty().withMessage("Age is required")
+      .optional()
       .isInt({ min: 0 }).withMessage("Age must be a positive number"),
 
     check("password")
-      .notEmpty().withMessage("Password is required")
+      .optional()
       .isLength({ min: 6 }).withMessage("Password must be at least 6 characters long"),
 
     check("phone")
-      .notEmpty().withMessage("Phone is required")
+      .optional()
       .matches(/^[0-9]{10}$/).withMessage("Phone must be a valid 10-digit number"),
 
     check("skills")
-      .notEmpty().withMessage("Skills are required"),
+      .optional()
+      .custom((val) => {
+        if (typeof val === "string") return true; // frontend sends CSV string
+        if (Array.isArray(val)) return true; // frontend sends array
+        throw new Error("Skills must be a string or array");
+      }),
 
     check("interests")
-      .notEmpty().withMessage("Interests are required"),
+      .optional()
+      .custom((val) => {
+        if (typeof val === "string") return true;
+        if (Array.isArray(val)) return true;
+        throw new Error("Interests must be a string or array");
+      }),
 
-    check("isDeleted")
-      .notEmpty().withMessage("isDeleted is required"),
-
-    check("receiveNotification")
-      .notEmpty().withMessage("receiveNotification is required"),
+    check("isDeleted").optional().isBoolean(),
+    check("receiveNotification").optional().isBoolean(),
   ],
   editProfile
 );
