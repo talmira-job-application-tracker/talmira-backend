@@ -1,5 +1,3 @@
-// models/Subscription.ts or Subscription.js
-
 import mongoose from 'mongoose';
 
 const subscriptionSchema = new mongoose.Schema(

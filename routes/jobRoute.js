@@ -78,9 +78,8 @@ jobRouter.patch('/:id',
   check("workMode")
     .notEmpty().withMessage("Work mode is required")
     .isIn(["Hybrid", "On-Site", "Remote"]).withMessage("Invalid work mode")
-],
+], editJob);
 
-    editJob);
 jobRouter.delete('/:id', deleteJob);
 
 
