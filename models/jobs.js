@@ -36,7 +36,7 @@ const jobSchema = new mongoose.Schema(
 
     language: {
       type: [String],
-      required: true
+      
     },
 
     qualification: {

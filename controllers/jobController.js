@@ -116,22 +116,43 @@ export const addJob = async (req, res, next) => {
     }
 
 
-    const jobKeywords = Array.isArray(keyword)
-      ? keyword.map(k => k.trim().toLowerCase())
-      : keyword.split(",").map(k => k.trim().toLowerCase());
+    // const jobKeywords = Array.isArray(keyword)
+    //   ? keyword.map(k => k.trim().toLowerCase())
+    //   : keyword.split(",").map(k => k.trim().toLowerCase());
 
-    const addedJob = await new Job({
-      title,
-      description,
-      company: existingCompany._id,
-      location,
-      jobType,
-      salary,
-      language,
-      qualification,
-      keyword: jobKeywords,
-      workMode,
-    }).save();
+    // const addedJob = await new Job({
+    //   title,
+    //   description,
+    //   company: existingCompany._id,
+    //   location,
+    //   jobType,
+    //   salary,
+    //   language,
+    //   qualification,
+    //   keyword: jobKeywords,
+    //   workMode,
+    // }).save();
+    const languages = Array.isArray(language)
+  ? language
+  : language?.split(",").map(l => l.trim()) || [];
+
+const jobKeywords = Array.isArray(keyword)
+  ? keyword.map(k => k.trim().toLowerCase())
+  : keyword?.split(",").map(k => k.trim().toLowerCase()) || [];
+
+const addedJob = await new Job({
+  title,
+  description,
+  company: existingCompany._id,
+  location,
+  jobType,
+  salary,
+  language: languages,
+  qualification,
+  keyword: jobKeywords,
+  workMode,
+}).save();
+
 
     //EMAIL to subscribers
     const subscriptions = await Subscription.find({ companyId: addedJob.company }).select("userId");
