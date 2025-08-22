@@ -22,8 +22,8 @@ userRouter.patch("/edit",uploadLogo.single("image"),[
       .isIn(["admin", "user"]).withMessage("Role must be admin or user"),
 
     check("age")
-      .optional()
-      .isInt({ min: 0 }).withMessage("Age must be a positive number"),
+   .optional({ checkFalsy: true })    //check null
+   .isInt({ min: 0 }).withMessage("Age must be a positive number"),
 
     check("password")
       .optional()
@@ -49,7 +49,6 @@ userRouter.patch("/edit",uploadLogo.single("image"),[
         throw new Error("Interests must be a string or array");
       }),
 
-    check("isDeleted").optional().isBoolean(),
     check("receiveNotification").optional().isBoolean(),
   ],
   editProfile
