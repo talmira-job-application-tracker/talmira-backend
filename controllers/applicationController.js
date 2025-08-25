@@ -72,15 +72,24 @@ export const viewApplication = async (req, res, next) => {
             select: "title company"
          }])
 
-        if (getApplication.status !== 'under review') {
-        getApplication.status = 'under review';
-        await getApplication.save();
+        if(!getApplication) {
+            return next(new HttpError("Application not found", 404));
         }
 
+        let shouldSave = false;
+        if (getApplication.status !== "under review") {
+        getApplication.status = "under review";
+        shouldSave = true;
+        }
 
-         if(!getApplication) {
-            return next(new HttpError("Application not found", 404));
-         }
+        if (!getApplication.isRead) {
+        getApplication.isRead = true;
+        shouldSave = true;
+        }
+
+        if (shouldSave) {
+        await getApplication.save();
+        }
 
         res.status(200).json({
             status: true,

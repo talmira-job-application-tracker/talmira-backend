@@ -140,26 +140,33 @@ export const listCompanies = async (req, res, next) => {
     const name = req.query.name?.trim();
     const industry = req.query.industry?.trim();
     const location = req.query.location?.trim();
+    const search = req.query.query?.trim();
 
     const query = { isDeleted: false };
 
-    if (name) {
-      query.name = { $regex: name, $options: 'i' }; // case-insensitive
-    }
+    // if (name) {
+    //   query.name = { $regex: name, $options: 'i' }; // case-insensitive
+    // }
+    // if (industry) {
+    //   query.industry = { $regex: industry, $options: 'i' };
+    // }
+    // if (location) {
+    //   query.location = { $regex: location, $options: 'i' };
+    // }
 
-    if (industry) {
-      query.industry = { $regex: industry, $options: 'i' };
-    }
-
-    if (location) {
-      query.location = { $regex: location, $options: 'i' };
+    if (search) {
+      query.$or = [
+        { name: { $regex: search, $options: "i" } },
+        { industry: { $regex: search, $options: "i" } },
+        { location: { $regex: search, $options: "i" } },
+      ];
     }
 
     const companies = await Company.find(query);
 
-    if (companies.length === 0) {
-      return next(new HttpError("No companies found!", 404));
-    }
+    // if (companies.length === 0) {
+    //   return next(new HttpError("No companies found!", 404));
+    // }
 
     res.status(200).json({
       status: true,
