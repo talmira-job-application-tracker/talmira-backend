@@ -25,7 +25,7 @@ const jobSchema = new mongoose.Schema(
 
     jobType: {
       type: String,
-      enum: ["Full-time", "Part-time", "Contract", "Internship"],
+      enum: ["Full-time", "Part-time", "Internship"],
       required: true
     },
 
@@ -36,7 +36,6 @@ const jobSchema = new mongoose.Schema(
 
     language: {
       type: [String],
-      
     },
 
     qualification: {
@@ -45,7 +44,8 @@ const jobSchema = new mongoose.Schema(
     },
 
     keyword: {
-      type: [String]
+      type: [String],
+      required: true
     },
 
     workMode: {

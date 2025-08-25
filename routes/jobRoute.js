@@ -24,19 +24,20 @@ jobRouter.post('/add', [
 
   check("jobType")
     .notEmpty().withMessage("Job type required")
-    .isIn(["Full-time", "Part-time", "Internship"]).withMessage("Must be either Full-time, Part-time, or Internship"),
+    .isIn(["Full-time", "Part-time", "Internship"]).withMessage("Invalid job type"),
 
   check("salary")
     .notEmpty().withMessage("Salary required"),
 
   check("language")
-    .optional(),
+    .optional()
+    .isArray().withMessage("Language must be an array"),
 
   check("qualification")
     .notEmpty().withMessage("Qualification field required"),
 
   check("keyword")
-    .optional(),
+    .isArray({ min: 1 }).withMessage("Keyword must be a non-empty array"),
 
   check("workMode")
     .optional()
@@ -53,9 +54,6 @@ jobRouter.patch('/:id',
   check("description")
     .notEmpty().withMessage("Description is required"),
 
-  check("company")
-    .notEmpty().withMessage("Company details required"),
-
   check("location")
     .notEmpty().withMessage("Location is required"),
 
@@ -67,13 +65,13 @@ jobRouter.patch('/:id',
     .notEmpty().withMessage("Salary is required"),
 
   check("language")
-    .isArray({ min: 1 }).withMessage("Language must be a non-empty array"),
+    .optional().isArray().withMessage("Language must be an array"),
 
   check("qualification")
     .notEmpty().withMessage("Qualification is required"),
 
   check("keyword")
-    .isArray().withMessage("Keyword must be an array"),
+    .isArray({ min: 1 }).withMessage("Keyword must be a non-empty array"),
 
   check("workMode")
     .notEmpty().withMessage("Work mode is required")

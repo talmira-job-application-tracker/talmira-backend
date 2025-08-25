@@ -32,7 +32,7 @@ export const listJob = async (req, res, next) => {
         }
 
         if (keyword) {
-        query.keyword = { $regex: keyword, $options: "i" };
+        query.keyword = { $in: keyword, $options: "i" };
         }
 
 
@@ -61,7 +61,7 @@ export const viewJob = async ( req, res, next ) => {
         const {id} = req.params
 
         let getJob = await Job.findById(id)
-        .select("title description company location jobType salary language qualification workMode")
+        .select("title description company location jobType salary language qualification keyword workMode")
         .populate({
             path: "company",
             select: "name"
@@ -76,6 +76,7 @@ export const viewJob = async ( req, res, next ) => {
             message: "success",
             data: getJob
         });
+        console.log(getJob)
 
     } catch (err){
         return next(new HttpError("Failed to fetch job details", 500));
@@ -114,24 +115,7 @@ export const addJob = async (req, res, next) => {
     if (!existingCompany) {
       return next(new HttpError("Company not found or is deleted", 404));
     }
-
-
-    // const jobKeywords = Array.isArray(keyword)
-    //   ? keyword.map(k => k.trim().toLowerCase())
-    //   : keyword.split(",").map(k => k.trim().toLowerCase());
-
-    // const addedJob = await new Job({
-    //   title,
-    //   description,
-    //   company: existingCompany._id,
-    //   location,
-    //   jobType,
-    //   salary,
-    //   language,
-    //   qualification,
-    //   keyword: jobKeywords,
-    //   workMode,
-    // }).save();
+    
     const languages = Array.isArray(language)
   ? language
   : language?.split(",").map(l => l.trim()) || [];
@@ -154,7 +138,7 @@ const addedJob = await new Job({
 }).save();
 
 
-    //EMAIL to subscribers
+//EMAIL to subscribers
     const subscriptions = await Subscription.find({ companyId: addedJob.company }).select("userId");
     const subscribedUserIds = subscriptions.map(sub => sub.userId.toString());
 
@@ -226,8 +210,7 @@ export const editJob = async (req, res, next) => {
         const {user_role} = req.userData
         const {
                 title, 
-                description, 
-                company, 
+                description,
                 location, 
                 jobType, 
                 salary, 
@@ -241,24 +224,39 @@ export const editJob = async (req, res, next) => {
             return next(new HttpError("Access Denied, only admins can edit", 403));
         }
 
+        const languages = Array.isArray(language)
+          ? language
+          : language?.split(",").map(l => l.trim().toLowerCase()) || [];
+
+        const jobKeywords = Array.isArray(keyword)
+          ? keyword.map(k => k.trim().toLowerCase())
+          : keyword?.split(",").map(k => k.trim().toLowerCase()) || [];
+
         const updatedJob = {
-            title, 
-            description, 
-            company, 
-            location, 
-            jobType, 
-            salary, 
-            language, 
-            qualification, 
-            keyword, 
-            workMode
-        }
+          title,
+          description,
+          location,
+          jobType,
+          salary,
+          language: languages,
+          qualification,
+          keyword: jobKeywords,
+          workMode
+        };
+
+        // if (company) {
+        //   const existingCompany = await Company.findOne({ _id: company, isDeleted: false });
+        //   if (!existingCompany) {
+        //     return next(new HttpError("Company not found or is deleted", 404));
+        //   }
+        //   updatedJob.company = existingCompany._id;
+        // }
 
         const editedJob = await Job.findOneAndUpdate(
-            {_id: id},
-            updatedJob,
-            {new: true},
-        )
+          { _id: id },
+          updatedJob,
+          { new: true }
+        );
 
          if(!editedJob){
             return next(new HttpError(' Job not found ',404));
