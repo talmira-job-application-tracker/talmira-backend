@@ -26,29 +26,36 @@ companyRouter.post('/add', uploadLogo.single('logo'),
   ],  addCompany)
 
 
-companyRouter.patch('/edit/:id',uploadLogo.single('logo'),
+companyRouter.patch('/edit/:id', uploadLogo.single('logo'),
   [
     check("name")
-      .notEmpty().withMessage("Company name is required")
+      .optional()
+      .notEmpty().withMessage("Company name cannot be empty")
       .trim(),
 
     check("industry")
-      .notEmpty().withMessage("Industry is required"),
+      .optional()
+      .notEmpty().withMessage("Industry cannot be empty"),
 
     check("description")
-      .notEmpty().withMessage("Description is required"),
+      .optional()
+      .notEmpty().withMessage("Description cannot be empty"),
 
     check("location")
-      .notEmpty().withMessage("Location is required"),
+      .optional()
+      .notEmpty().withMessage("Location cannot be empty"),
 
     check("website")
-      .notEmpty().withMessage("Website is required"),
+      .optional()
+      .isURL().withMessage("Website must be a valid URL"),
 
     check("isDeleted")
-      .notEmpty().withMessage("isDeleted is required"),
+      .optional()
+      .isBoolean().withMessage("isDeleted must be true or false"),
   ],
   editCompanyProfile
 );
+
 
 companyRouter.delete('/delete/:id',deleteCompany)
 companyRouter.get('/list', listCompanies)//also have search

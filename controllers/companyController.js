@@ -69,6 +69,9 @@ export const editCompanyProfile = async (req,res,next) => {
      
     const { name, industry, description, location, website } = req.body;
     const logoPath = req.file ? `/uploads/logos/${req.file.filename}` : null;
+    // console.log("req.body:", req.body);
+    // console.log("req.file:", req.file);
+
 
     const company = await Company.findById(companyId);
       if (!company) {
