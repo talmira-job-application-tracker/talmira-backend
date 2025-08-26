@@ -7,53 +7,75 @@ import transporter from "../utils/mailer.js";
 import Subscription from "../models/subscription.js";
 import Alert from "../models/notification.js";
 
-//list
+// //list
 export const listJob = async (req, res, next) => {
+  try {
+    const { title, location, jobType, workMode, keyword, query: search } = req.query;
 
-    try{
-      const { title, location, jobType, workMode, keyword } = req.query;
+    let query = {};
 
-        let query = {};
-
-        if (title) {
-        query.title = { $regex: title, $options: "i" };
-        }
-
-        if(location) {
-            query.location = { $regex: location, $options: "i" }
-        }
-
-        if (jobType) {
-        query.jobType = jobType;
-        }
-
-        if (workMode) {
-        query.workMode = workMode;
-        }
-
-        if (keyword) {
-        query.keyword = { $in: keyword, $options: "i" };
-        }
-
-
-        const listedJobs = await Job.find(query)
-        .select("title description company location jobType salary language qualification keyword workMode")
-        .populate({
-            path: "company",
-            select: "name"
-        })
-        .sort({createdAt: -1});
-
-        res.status(200).json({
-            status: true,
-            message: "Job fetched successfully",
-            data: listedJobs,
-        });
-    } catch (err){
-      console.error("Search Job Error Stack:", err);
-      return next(new HttpError('Error fetching jobs', 500));
+    if (title) {
+      query.title = { $regex: title.trim(), $options: "i" };
     }
+
+    if (location) {
+      query.location = { $regex: location.trim(), $options: "i" };
+    }
+
+    if (jobType) {
+      query.jobType = jobType;
+    }
+
+    if (workMode) {
+      query.workMode = workMode;
+    }
+
+    if (keyword) {
+      query.keyword = { $in: [new RegExp(keyword.trim(), "i")] };
+    }
+
+    if (search) {
+      query.$or = [
+        { title: { $regex: search.trim(), $options: "i" } },
+        { location: { $regex: search.trim(), $options: "i" } },
+        { jobType: { $regex: search.trim(), $options: "i" } },
+        { workMode: { $regex: search.trim(), $options: "i" } },
+        { qualification: { $regex: search.trim(), $options: "i" } },
+        { language: { $elemMatch: { $regex: search.trim(), $options: "i" } } },
+        { keyword: { $elemMatch: { $regex: search.trim(), $options: "i" } } },
+      ];
+
+      const companies = await Company.find({
+        name: { $regex: search.trim(), $options: "i" },
+      }).select("_id");
+
+      if (companies.length > 0) {
+        query.$or.push({ company: { $in: companies.map((c) => c._id) } });
+      }
+    }
+
+    const listedJobs = await Job.find(query)
+      .select(
+        "title description company location jobType salary language qualification keyword workMode"
+      )
+      .populate({
+        path: "company",
+        select: "name",
+      })
+      .sort({ createdAt: -1 });
+
+    res.status(200).json({
+      status: true,
+      message: "Job fetched successfully",
+      data: listedJobs,
+    });
+  } catch (err) {
+    console.error("Search Job Error Stack:", err);
+    return next(new HttpError("Error fetching jobs", 500));
+  }
 };
+
+
 
 //view
 export const viewJob = async ( req, res, next ) => {
