@@ -7,7 +7,7 @@ import { check } from "express-validator";
 const applicationRouter = Router();
 applicationRouter.use(userAuthCheck);
 
-applicationRouter.post('/apply/:id', uploadResume.single("resume"), createApplication);
+applicationRouter.post('/:id/apply', uploadResume.single("resume"), createApplication);
 applicationRouter.get('/list', listApplication);
 applicationRouter.patch('/:id/status', editApplicationStatus);
 applicationRouter.get('/:id', viewApplication);
