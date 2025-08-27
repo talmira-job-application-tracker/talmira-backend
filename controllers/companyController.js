@@ -167,14 +167,14 @@ export const listCompanies = async (req, res, next) => {
 //view single company
 export const viewOneCompany = async (req,res,next) => {
   try{
-    const role = req.userData.user_role;
+    // const role = req.userData.user_role;
     const companyId = req.params.id;
 
     let query = Company.findOne({ _id: companyId, isDeleted: false });
 
-    if (role !== 'admin') {
+    // if (role !== 'admin') {
       query = query.select("name description location industry");
-    }
+    // }
 
     const company = await query;
 
