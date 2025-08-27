@@ -25,6 +25,27 @@ export const viewProfile = async (req, res, next) => {
   }
 };
 
+//view user by admin
+export const viewUserById = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    const user = await User.findById(id).select("-password -receiveNotification");
+
+    if (!user) {
+      return next(new HttpError("User not found", 404));
+    }
+
+    res.status(200).json({
+      status: true,
+      data: user,
+    });
+  } catch (err) {
+    console.error("View user by ID error:", err);
+    return next(new HttpError("Server error", 500));
+  }
+};
+
 //edit profile
 export const editProfile = async (req, res, next) => {
   

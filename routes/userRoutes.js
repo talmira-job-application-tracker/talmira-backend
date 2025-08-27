@@ -1,5 +1,5 @@
 import express from 'express'
-import { deleteUserProfile, editProfile,  listAllProfile,    toggleReceiveNotification,    viewProfile } from '../controllers/userController.js'
+import { deleteUserProfile, editProfile,  listAllProfile,    toggleReceiveNotification,    viewProfile, viewUserById } from '../controllers/userController.js'
 import userAuthCheck from '../middlewares/authCheck.js'
 import { uploadLogo } from '../middlewares/upload.js'
 import { check } from 'express-validator'
@@ -9,6 +9,8 @@ const userRouter = express.Router()
 userRouter.use(userAuthCheck)
 
 userRouter.get('/view',viewProfile)
+
+userRouter.get("/:id", viewUserById)
 
 userRouter.patch("/edit",uploadLogo.single("image"),[
     check("name").optional().trim(),

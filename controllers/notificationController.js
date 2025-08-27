@@ -78,32 +78,15 @@ export const deleteAlert = async (req,res,next) => {
 }
 
 // viewUnreadAlerts
-export const viewUnreadAlerts = async (req, res, next) => {
+export const markAlertRead = async (req, res, next) => {
   try {
     const userId = req.userData.user_id;
+    const alertId = req.params.id;
 
-    const unreadAlerts = await Alert.find({
-      userId,
-      isRead: false,
-      isDeleted: false ,
-    }).sort({ createdAt: -1 });
+    await Alert.updateOne({ _id: alertId, userId }, { $set: { isRead: true } });
 
-    //mark them as read
-
-    if (unreadAlerts.length > 0) {
-      await Alert.updateMany(
-        { userId, isRead: false },
-        { $set: { isRead: true } }
-      );
-    }
-
-    res.status(200).json({
-      success: true,
-      count: unreadAlerts.length,
-      alerts: unreadAlerts
-    });
-
+    res.status(200).json({ success: true });
   } catch (err) {
-    next(new HttpError("Failed to fetch unread alerts", 500));
+    next(new HttpError("Failed to mark alert as read", 500));
   }
 };
