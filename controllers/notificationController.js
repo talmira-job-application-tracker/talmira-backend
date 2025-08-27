@@ -72,7 +72,7 @@ export const deleteAlert = async (req,res,next) => {
 
     } catch (err) {
       console.error(err)
-      return next (new HttpError('Fialed to delete alert',500))
+      return next (new HttpError('Failed to delete alert',500))
         
     }
 }

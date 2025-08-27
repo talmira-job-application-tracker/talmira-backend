@@ -54,53 +54,61 @@ export const createApplication = async (req, res, next) => {
 
 //view
 export const viewApplication = async (req, res, next) => {
-    try{
-         const { id } = req.params;
-         const { user_role } = req.userData;
+  try {
+    const { id } = req.params;
+    const { user_role, user_id } = req.userData; 
 
-         if (user_role !== "admin") {
-            return next(new HttpError("Only admins have access to view", 422));
-         }
-
-         let getApplication = await Application.findById(id)
-         .select("user job appliedAt resume contactInfo")
-         .populate([{
-            path: "user",
-            select: "name"
-         },{
-            path: "job",
-            select: "title company"
-         }])
-
-        if(!getApplication) {
-            return next(new HttpError("Application not found", 404));
+    let getApplication = await Application.findById(id)
+    .select("user job appliedAt resume contactInfo status isRead")
+    .populate([
+        { path: "user", select: "name" },
+        { 
+        path: "job", 
+        select: "title company",
+        populate: { path: "company", select: "name" }  
         }
+    ]);
 
-        let shouldSave = false;
-        if (getApplication.status !== "under review") {
+
+    if (!getApplication) {
+      return next(new HttpError("Application not found", 404));
+    }
+
+    if (user_role !== "admin") {
+      if (getApplication.user._id.toString() !== user_id.toString()) {
+        return next(new HttpError("Not authorized to view this application", 403));
+      }
+    }
+
+    if (user_role === "admin") {
+      let shouldSave = false;
+
+      if (getApplication.status !== "under review") {
         getApplication.status = "under review";
         shouldSave = true;
-        }
+      }
 
-        if (!getApplication.isRead) {
+      if (!getApplication.isRead) {
         getApplication.isRead = true;
         shouldSave = true;
-        }
+      }
 
-        if (shouldSave) {
+      if (shouldSave) {
         await getApplication.save();
-        }
-
-        res.status(200).json({
-            status: true,
-            message: "success",
-            data: getApplication
-        });
-
-    } catch (err) {
-        return next(new HttpError("Failed to fetch application details", 500));
+      }
     }
-}
+
+    res.status(200).json({
+      status: true,
+      message: "success",
+      data: getApplication,
+    });
+  } catch (err) {
+    return next(new HttpError("Failed to fetch application details", 500));
+  }
+};
+
+
 
 // list
 export const listApplication = async (req, res, next) => {
@@ -112,7 +120,11 @@ export const listApplication = async (req, res, next) => {
         .select("user job appliedAt status resume contactInfo")
         .populate([
           { path: "user", select: "name" },
-          { path: "job", select: "title company" },
+          { 
+            path: "job", 
+            select: "title company",
+            populate: { path: "company", select: "name" } 
+          }
         ])
         .sort({ createdAt: -1 });
 
@@ -125,10 +137,18 @@ export const listApplication = async (req, res, next) => {
         message: "success",
         data: listedApplications,
       });
-    } else {
+    } 
+    
+    else {
       const appliedApplication = await Application.find({ user: user_id })
         .select("job appliedAt status resume")
-        .populate([{ path: "job", select: "title company" }])
+        .populate([
+          { 
+            path: "job", 
+            select: "title company",
+            populate: { path: "company", select: "name" } 
+          }
+        ])
         .sort({ createdAt: -1 });
 
       return res.status(200).json({
@@ -142,6 +162,7 @@ export const listApplication = async (req, res, next) => {
     return next(new HttpError("Failed to fetch application details", 500));
   }
 };
+
 
 
 //edit status
