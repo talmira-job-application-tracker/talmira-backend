@@ -28,23 +28,26 @@ export const subscribedUsers = async (req , res, next) => {
 
 //users list all the subscribed companies
 export const subscribedCompanies = async (req, res, next) => {
-    try{
-        const {user_id} = req.userData;
+  try {
+    const { user_id } = req.userData;
 
-        const subscriptions = await Subscription.find({userId: user_id, isActive: true})
-        .populate("companyId", "name email -_id");
+    const subscriptions = await Subscription.find({ userId: user_id, isActive: true })
+      .populate("companyId", "name industry description location website logo email");
 
-         const companies = subscriptions.map(sub => sub.companyId);
+    const companies = subscriptions.map(sub => sub.companyId);
 
-        res.status(200).json({
-            status: true,
-            message: "Successfully listed",
-            data: subscriptions
-        });
-    } catch (err) {
-        return next(new HttpError("Error fetching list", 500));
-    }
-}
+    res.status(200).json({
+      status: true,
+      message: "Successfully listed",
+      data: companies   
+    });
+
+  } catch (err) {
+    return next(new HttpError("Error fetching list", 500));
+  }
+};
+
+
 
 //toggle subscription (subscribe/unsubscribe)
 export const toggleSubscription = async (req, res, next) => {

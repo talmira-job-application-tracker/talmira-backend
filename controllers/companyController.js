@@ -12,8 +12,7 @@ export const addCompany = async (req, res, next) => {
     }
 
     const { name, industry, description, location, website, logo } = req.body;
-   
-
+    
     const role = req.userData.user_role;
     
 
