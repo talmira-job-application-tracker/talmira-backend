@@ -81,23 +81,23 @@ export const viewApplication = async (req, res, next) => {
     }
 
     if (user_role === "admin") {
-      let shouldSave = false;
+    let shouldSave = false;
 
-      if (getApplication.status !== "under review") {
+    if (getApplication.status === "applied") {   
         getApplication.status = "under review";
         shouldSave = true;
-      }
-
-      if (!getApplication.isRead) {
-        getApplication.isRead = true;
-        shouldSave = true;
-      }
-
-      if (shouldSave) {
-        await getApplication.save();
-      }
     }
 
+    if (!getApplication.isRead) {
+        getApplication.isRead = true;
+        shouldSave = true;
+    }
+
+    if (shouldSave) {
+        await getApplication.save();
+    }
+    }
+    
     res.status(200).json({
       status: true,
       message: "success",
