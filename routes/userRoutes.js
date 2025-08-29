@@ -9,6 +9,7 @@ const userRouter = express.Router()
 userRouter.use(userAuthCheck)
 
 userRouter.get('/view',viewProfile)
+userRouter.get('/list', listAllProfile)
 
 userRouter.get("/:id", viewUserById)
 
@@ -56,7 +57,7 @@ userRouter.patch("/edit",uploadLogo.single("image"),[
   editProfile
 );
 
-userRouter.get('/list', listAllProfile)
+
 userRouter.delete('/delete',deleteUserProfile)
 userRouter.patch("/togglenotification",  toggleReceiveNotification);
 

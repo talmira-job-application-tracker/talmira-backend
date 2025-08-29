@@ -48,7 +48,6 @@ export const viewUserById = async (req, res, next) => {
 
 //edit profile
 export const editProfile = async (req, res, next) => {
-  
   try {
     const errors = validationResult(req)
     if(!errors.isEmpty()){
@@ -121,7 +120,7 @@ export const listAllProfile = async (req, res, next) => {
   try {
     const role = req.userData.user_role;
 
-    if (role !== 'admin') {
+    if (role !== 'admin') { 
       return next(new HttpError("You are not authorized to view this page", 403));
     }
 
