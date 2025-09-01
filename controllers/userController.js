@@ -25,6 +25,7 @@ export const viewProfile = async (req, res, next) => {
   }
 };
 
+<<<<<<< Updated upstream
 //view user by admin
 export const viewUserById = async (req, res, next) => {
   try {
@@ -46,13 +47,19 @@ export const viewUserById = async (req, res, next) => {
   }
 };
 
+=======
+>>>>>>> Stashed changes
 //edit profile
 export const editProfile = async (req, res, next) => {
   try {
     const errors = validationResult(req)
     if(!errors.isEmpty()){
+<<<<<<< Updated upstream
       console.log("Validation errors:", errors.array());
       return res.status(422).json({ errors: errors.array() });
+=======
+      return next(new HttpError(errors.array()[0].msg, 422));
+>>>>>>> Stashed changes
     }
     
     const userId = req.userData.user_id;

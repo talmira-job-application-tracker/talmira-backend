@@ -172,7 +172,7 @@ export const viewOneCompany = async (req,res,next) => {
     let query = Company.findOne({ _id: companyId, isDeleted: false });
 
     // if (role !== 'admin') {
-      query = query.select("name description location industry");
+      query = query.select("name description location industry logo website");
     // }
 
     const company = await query;
