@@ -12,7 +12,7 @@ export const subscribedUsers = async (req , res, next) => {
         }
 
         const subscribers = await Subscription.find({companyId, isActive: true})
-        .populate("userId", "name email");
+        .populate("userId", "name email image");
 
         res.status(200).json({
             status: true,
