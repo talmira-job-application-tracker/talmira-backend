@@ -160,7 +160,7 @@ const addedJob = await new Job({
 }).save();
 
 
-//EMAIL to subscribers
+// EMAIL to subscribers
     const subscriptions = await Subscription.find({ companyId: addedJob.company }).select("userId");
     const subscribedUserIds = subscriptions.map(sub => sub.userId.toString());
 
@@ -177,7 +177,7 @@ const addedJob = await new Job({
           title,
           company: existingCompany.name,
           location,
-          link: `https://localhost:3000/job/${addedJob._id}`,
+          link: `${process.env.FRONTEND_URL}/job/${addedJob._id}`,
         },
       };
 

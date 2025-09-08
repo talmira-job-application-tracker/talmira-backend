@@ -1,13 +1,19 @@
-<h2>Hey {{name}},</h2>
+<div style="font-family: 'Figtree', sans-serif; background: linear-gradient(to bottom right, #0d1f1e, #103c37); color: #ffffff; padding: 30px; border-radius: 15px; max-width: 600px; margin: auto; box-shadow: 0 8px 20px rgba(0,0,0,0.3);">
+    
+    <h2 style="font-size: 24px; margin-bottom: 10px;">Hey {{name}},</h2>
+    
+    <p style="font-size: 16px; line-height: 1.6;">A new job just dropped that matches your profile:</p>
+    
+    <div style="background-color: rgba(255,255,255,0.05); padding: 15px 20px; border-radius: 10px; margin: 15px 0;">
+        <h3 style="font-size: 20px; margin: 0 0 10px 0; color: #ffffff;">{{title}}</h3>
+        <p style="margin: 0; font-size: 14px;">Company: {{company}}</p>
+        <p style="margin: 0; font-size: 14px;">Location: {{location}}</p>
+    </div>
+    
+    <p style="text-align: center; margin: 20px 0;">
+        <a href="{{link}}" style="text-decoration: none; background: #00d084; color: #0d1f1e; padding: 10px 20px; border-radius: 8px; font-weight: bold; display: inline-block; transition: all 0.3s ease;">View & Apply</a>
+    </p>
+    
+    <p style="text-align: center; font-size: 14px; opacity: 0.8;">Good luck 🤞</p>
 
-<p>A new job just dropped that matches your profile:</p>
-
-<strong>{{title}}</strong> <br/>
-Company: {{company}} <br/>
-Location: {{location}} <br/>
-
-<p>
-    <a href="{{link}}">Click here to view/apply</a>
-</p>
-
-<p>Good luck 🤞</p>
+</div>
