@@ -1,5 +1,4 @@
 import { validationResult } from "express-validator";
-import { validationResult } from "express-validator";
 import HttpError from "../middlewares/httpError.js";
 import User from "../models/users.js";
 

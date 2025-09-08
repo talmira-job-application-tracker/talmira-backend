@@ -30,6 +30,12 @@ const applicationSchema = new mongoose.Schema(
       email: String,
       phone: String
     },
+    prevPosition:{
+      type: String,
+    },
+    prevCompany: {
+      type: String,
+    },
     isRead: {
       type: Boolean,
       default: false

@@ -6,6 +6,8 @@ import HttpError from "../middlewares/httpError.js"
 //add
 export const createApplication = async (req, res, next) => {
     try{
+        const role = req.userData.user_role;
+          if (role == 'admin') return
         
         const {id: job_id} = req.params;
         const {user_id} = req.userData;
@@ -30,14 +32,18 @@ export const createApplication = async (req, res, next) => {
 
         if(!req.file) return next(new HttpError("Resume required!", 422));
 
+        const {prevPosition, prevCompany} = req.body
+
         const application = await new Application({
             user: user._id,
             job: job._id,
             resume: resumePath,
+            prevPosition,
+            prevCompany,
             contactInfo: {
                 name: user.name,
                 email: user.email,
-                phone: user.phone
+                phone: user.phone,
             }
         }).save();
 
@@ -59,7 +65,7 @@ export const viewApplication = async (req, res, next) => {
     const { user_role, user_id } = req.userData; 
 
     let getApplication = await Application.findById(id)
-    .select("user job appliedAt resume contactInfo status isRead")
+    .select("user job appliedAt resume contactInfo prevPosition prevCompany status isRead")
     .populate([
         { path: "user", select: "name" },
         { 
