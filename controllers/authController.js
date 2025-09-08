@@ -104,94 +104,95 @@ export const registerUser = async (req, res, next) => {
 };
 
 //login
-export const loginUser = async ( req, res, next) => {
-    try{
-         const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            return next(new HttpError(errors.array()[0].msg, 422)); 
-        }
-        const { email, password } = req.body;
-        const user = await User.findOne({email});
-
-        if(!user){
-            return next(new HttpError("user doesn't exist",404));
-        } else {
-            const isMatch = await bcrypt.compare(password, user.password);
-
-            if(!isMatch){
-                return next(new HttpError('invalid credentials',403))
-            } else {
-                const token = jwt.sign(
-                    { id: user._id, role: user.role },
-                    process.env.JWT_SECRET,
-                    { expiresIn: process.env.JWT_TOKEN_EXPIRY}
-                );
-
-                if(!token){
-                    return next(new HttpError('Token generation failed', 403));
-                } else {
-                    res.status(200).json({
-                        status: true,
-                        message: "Login successful",
-                        token,
-                        data: {
-                            _id: user.id,
-                            email: user.email,
-                            role: user.role
-                        }
-                    })
-                }
-            }
-        }
-    } catch (err){
-        return next(new HttpError("Login Failed", 500));
-    }
-};
-
-// export const loginUser = async (req, res, next) => {
-//     try {
-//         const errors = validationResult(req);
+// export const loginUser = async ( req, res, next) => {
+//     try{
+//          const errors = validationResult(req);
 //         if (!errors.isEmpty()) {
 //             return next(new HttpError(errors.array()[0].msg, 422)); 
 //         }
-
 //         const { email, password } = req.body;
-//         const user = await User.findOne({ email });
+//         const user = await User.findOne({email});
 
-//         if (!user) {
-//             return next(new HttpError("User doesn't exist", 404));
-//         }
+//         if(!user){
+//             return next(new HttpError("user doesn't exist",404));
+//         } else {
+//             const isMatch = await bcrypt.compare(password, user.password);
 
-//         const isMatch = await bcrypt.compare(password, user.password);
-//         if (!isMatch) {
-//             return next(new HttpError('Invalid credentials', 403));
-//         }
+//             if(!isMatch){
+//                 return next(new HttpError('invalid credentials',403))
+//             } else {
+//                 const token = jwt.sign(
+//                     { id: user._id, role: user.role },
+//                     process.env.JWT_SECRET,
+//                     { expiresIn: process.env.JWT_TOKEN_EXPIRY}
+//                 );
 
-
-//         const token = jwt.sign(
-//             { id: user._id, role: user.role },
-//             process.env.JWT_SECRET,
-//             { expiresIn: process.env.JWT_TOKEN_EXPIRY }
-//         );
-
-//         // Set cookie 
-//         res.cookie("token", token, {
-//             httpOnly: true,
-//             secure: process.env.NODE_ENV === "production",
-//             sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-//         });
-
-//         res.status(200).json({
-//             status: true,
-//             message: "Login successful",
-//             data: {
-//                 _id: user._id,
-//                 email: user.email,
-//                 role: user.role
+//                 if(!token){
+//                     return next(new HttpError('Token generation failed', 403));
+//                 } else {
+//                     res.status(200).json({
+//                         status: true,
+//                         message: "Login successful",
+//                         token,
+//                         data: {
+//                             _id: user.id,
+//                             email: user.email,
+//                             role: user.role
+//                         }
+//                     })
+//                 }
 //             }
-//         });
-
-//     } catch (err) {
+//         }
+//     } catch (err){
 //         return next(new HttpError("Login Failed", 500));
 //     }
 // };
+
+export const loginUser = async (req, res, next) => {
+    try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return next(new HttpError(errors.array()[0].msg, 422)); 
+        }
+
+        const { email, password } = req.body;
+        const user = await User.findOne({ email });
+
+        if (!user) {
+            return next(new HttpError("User doesn't exist", 404));
+        }
+
+        if (user.isDeleted) {
+            return next(new HttpError("Account deleted. Cannot login.", 403));
+        }
+
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) {
+            return next(new HttpError('Invalid credentials', 403));
+        }
+
+        const token = jwt.sign(
+            { id: user._id, role: user.role },
+            process.env.JWT_SECRET,
+            { expiresIn: process.env.JWT_TOKEN_EXPIRY }
+        );
+
+        if (!token) {
+            return next(new HttpError('Token generation failed', 403));
+        }
+
+        res.status(200).json({
+            status: true,
+            message: "Login successful",
+            token,
+            data: {
+                _id: user.id,
+                email: user.email,
+                role: user.role
+            }
+        });
+
+    } catch (err) {
+        return next(new HttpError("Login Failed", 500));
+    }
+};
