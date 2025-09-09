@@ -49,9 +49,6 @@ companyRouter.patch('/edit/:id', uploadLogo.single('logo'),
       .optional()
       .isURL().withMessage("Website must be a valid URL"),
 
-    check("isDeleted")
-      .optional()
-      .isBoolean().withMessage("isDeleted must be true or false"),
   ],
   editCompanyProfile
 );
