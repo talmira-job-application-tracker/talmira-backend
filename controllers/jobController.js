@@ -98,7 +98,6 @@ export const viewJob = async ( req, res, next ) => {
             message: "success",
             data: getJob
         });
-        console.log(getJob)
 
     } catch (err){
         return next(new HttpError("Failed to fetch job details", 500));

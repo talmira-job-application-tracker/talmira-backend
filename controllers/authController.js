@@ -64,30 +64,6 @@ export const registerUser = async (req, res, next) => {
                             image:user.image
                         }
                     })
-                    // const token = jwt.sign(
-                    //     { id: user._id, role: user.role },
-                    //     process.env.JWT_SECRET,
-                    //     { expiresIn: process.env.JWT_TOKEN_EXPIRY }
-                    // );
-
-        
-                    // res.cookie("token", token, {
-                    //     httpOnly: true,
-                    //     secure: process.env.NODE_ENV === "production",
-                    //     sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-                    // });
-
-                    // res.status(201).json({
-                    //     status: true,
-                    //     message: "Registered Successfully",
-                    //     data: {
-                    //         _id: user._id,
-                    //         email: user.email,
-                    //         role: user.role,
-                    //         age: user.age,
-                    //         image: user.image
-                    //     }
-                    // });
                 }
             }
         }

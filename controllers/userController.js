@@ -1,6 +1,8 @@
 import { validationResult } from "express-validator";
 import HttpError from "../middlewares/httpError.js";
 import User from "../models/users.js";
+import jwt from "jsonwebtoken";
+import bcrypt from 'bcrypt';
 
 // View Profile
 export const viewProfile = async (req, res, next) => {
@@ -46,21 +48,103 @@ export const viewUserById = async (req, res, next) => {
   }
 };
 
-//edit profile
+// //edit profile
+// export const editProfile = async (req, res, next) => {
+//   try {
+//     const errors = validationResult(req)
+//     if(!errors.isEmpty()){
+//       console.log("Validation errors:", errors.array());
+//       return res.status(422).json({ errors: errors.array() });
+//     }
+    
+//     const userId = req.userData.user_id;
+//     const { name, email, age, phone, password } = req.body;
+
+//     let hashedPassword;
+//     let skills = req.body.skills;
+//     let interests = req.body.interests;
+
+//    if (password && password.trim() !== "" && password !== "undefined") {
+//       const hashedPassword = await bcrypt.hash(password, 12);
+//       updatedData.password = hashedPassword;
+//     }
+
+//     if (typeof skills === "string") {
+//       try {
+//         skills = JSON.parse(skills);
+//       } catch {
+//         skills = [];
+//       }
+//     }
+
+//     if (typeof interests === "string") {
+//       try {
+//         interests = JSON.parse(interests);
+//       } catch {
+//         interests = [];
+//       }
+//     }
+
+//     const imagePath = req.file ? `/uploads/others/${req.file.filename}` : null;
+
+//     const updatedData = {};
+//     if (name !== undefined) updatedData.name = name;
+//     if (email !== undefined) updatedData.email = email;
+//     if (age !== undefined) updatedData.age = age;
+//     if (hashedPassword) updatedData.password = hashedPassword;
+//     if (phone !== undefined) updatedData.phone = phone;
+//     if (skills !== undefined) updatedData.skills = skills;
+//     if (interests !== undefined) updatedData.interests = interests;
+//     if (imagePath) updatedData.image = imagePath;
+
+//     console.log("Password from frontend:", req.body.password);
+//     console.log("UpdatedData:", updatedData);
+
+
+//     const updatedUser = await User.findByIdAndUpdate(
+//       userId,
+//       { $set: updatedData },
+//       { new: true }
+//     ).select('-password -receiveNotification');
+
+//     if (!updatedUser) {
+//       return next(new HttpError("User not found", 404));
+//     } 
+
+//         const token = jwt.sign(
+//             {id: updatedUser._id, role: updatedUser.role },
+//             process.env.JWT_SECRET,
+//             { expiresIn: process.env.JWT_TOKEN_EXPIRY}
+//         );
+
+//     res.status(200).json({
+//       status: true,
+//       message: "Profile updated successfully",
+//       data: updatedUser,
+//       token
+//     });
+//   } catch (error) {
+//     console.error(error); 
+//     return next(new HttpError("Server error", 500));
+//   }
+// };
+
+// edit profile
 export const editProfile = async (req, res, next) => {
   try {
-    const errors = validationResult(req)
-    if(!errors.isEmpty()){
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
       console.log("Validation errors:", errors.array());
       return res.status(422).json({ errors: errors.array() });
     }
-    
+
     const userId = req.userData.user_id;
-    const { name, email, age, phone} = req.body;
+    const { name, email, age, phone, password } = req.body;
 
     let skills = req.body.skills;
     let interests = req.body.interests;
 
+    // parse skills
     if (typeof skills === "string") {
       try {
         skills = JSON.parse(skills);
@@ -69,6 +153,7 @@ export const editProfile = async (req, res, next) => {
       }
     }
 
+    // parse interests
     if (typeof interests === "string") {
       try {
         interests = JSON.parse(interests);
@@ -77,10 +162,9 @@ export const editProfile = async (req, res, next) => {
       }
     }
 
-
     const imagePath = req.file ? `/uploads/others/${req.file.filename}` : null;
 
-  
+    // build update object
     const updatedData = {};
     if (name !== undefined) updatedData.name = name;
     if (email !== undefined) updatedData.email = email;
@@ -90,29 +174,43 @@ export const editProfile = async (req, res, next) => {
     if (interests !== undefined) updatedData.interests = interests;
     if (imagePath) updatedData.image = imagePath;
 
+    // handle password update safely
+    if (password && password.trim() !== "" && password !== "undefined") {
+      const hashedPassword = await bcrypt.hash(password, 12);
+      updatedData.password = hashedPassword;
+    }
+
+    console.log("Password from frontend:", req.body.password);
+    console.log("UpdatedData:", updatedData);
+
     const updatedUser = await User.findByIdAndUpdate(
       userId,
       { $set: updatedData },
       { new: true }
-    ).select('-password -receiveNotification');
+    ).select("-password -receiveNotification");
 
     if (!updatedUser) {
       return next(new HttpError("User not found", 404));
     }
 
+    const token = jwt.sign(
+      { id: updatedUser._id, role: updatedUser.role },
+      process.env.JWT_SECRET,
+      { expiresIn: process.env.JWT_TOKEN_EXPIRY }
+    );
+
     res.status(200).json({
       status: true,
       message: "Profile updated successfully",
-      data: updatedUser
+      data: updatedUser,
+      token,
     });
-    // console.log("req.file:", req.file);
-    // console.log("updatedData:", updatedData);
-
   } catch (error) {
-    console.error(error); 
+    console.error(error, 'error......');
     return next(new HttpError("Server error", 500));
   }
 };
+
 
 
 // listAllProfile

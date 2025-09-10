@@ -12,7 +12,7 @@ import alertRoute from './routes/notificationRoute.js'
 import cookieParser from 'cookie-parser'
 
 dotenv.config()
-console.log("Email Host:", process.env.EMAIL_HOST); // should print sandbox.smtp.mailtrap.io
+// console.log("Email Host:", process.env.EMAIL_HOST); // should print sandbox.smtp.mailtrap.io
 
 const app = express()
 const PORT = process.env.PORT || 8000;
