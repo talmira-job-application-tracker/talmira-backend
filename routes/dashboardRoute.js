@@ -4,8 +4,6 @@ import { getCounts } from "../controllers/dashboardController.js";
 
 const dashboardRouter = Router();
 
-dashboardRouter.use(userAuthCheck);
-
 dashboardRouter.get("/counts", getCounts);
 
 export default dashboardRouter;
