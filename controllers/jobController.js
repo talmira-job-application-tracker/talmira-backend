@@ -9,6 +9,10 @@ import Alert from "../models/notification.js";
 
 // //list
 export const listJob = async (req, res, next) => {
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
+  const skip = (page - 1) * limit;
+
   try {
     const { title, location, jobType, workMode, keyword, query: search } = req.query;
 
@@ -62,12 +66,19 @@ export const listJob = async (req, res, next) => {
         path: "company",
         select: "name",
       })
-      .sort({ createdAt: -1 });
+      .sort({ createdAt: -1 })
+      .skip(skip)    
+      .limit(limit);
+
+    const total = await Job.countDocuments(query);
 
     res.status(200).json({
       status: true,
-      message: "Job fetched successfully",
+      message: "success",
       data: listedJobs,
+      currentPage: page,
+      totalPages: Math.ceil(total / limit),
+      totalJobs: total,
     });
   } catch (err) {
     console.error("Search Job Error Stack:", err);
