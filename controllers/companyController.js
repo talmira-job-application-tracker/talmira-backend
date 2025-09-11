@@ -2,98 +2,196 @@ import { validationResult } from "express-validator";
 import HttpError from "../middlewares/httpError.js";
 import Company from "../models/company.js";
 
-//addcompany
+// //addcompany
+// export const addCompany = async (req, res, next) => {
+//   try {
+    
+//     const errors = validationResult(req);
+//     if (!errors.isEmpty()) {
+//       return next(new HttpError(errors.array()[0].msg, 422));
+//     }
+
+//     const { name, industry, description, location, website } = req.body;
+    
+//     const role = req.userData.user_role;
+    
+
+//     if (role !== 'admin') {
+//       return res.status(403).json({ message: 'Only admins can add companies' });
+//     }
+
+//     if (!name || !industry || !location) {
+//       return next(new HttpError("Required fields missing", 400));
+//     }
+
+  
+//     const logoPath = req.file ? `/uploads/logos/${req.file.filename}` : null;
+//     const newCompany = new Company({
+//       name,
+//       industry,
+//       description,
+//       location,
+//       website,
+//       logo: logoPath
+//     });
+
+//     await newCompany.save();
+
+
+//     res.status(201).json({
+//       status: true,
+//       message: 'Company added successfully',
+//       data: null
+//     });
+
+//   } catch (err) {
+//      console.error("Add Company Error:", err);
+//     return next(new HttpError('Failed to add company', 500));
+//   }
+// };
+
+// //update company
+// export const editCompanyProfile = async (req,res,next) => {
+//     try{
+//     const errors = validationResult(req);
+//     if (!errors.isEmpty()) {
+//       return next(new HttpError(errors.array()[0].msg, 422));
+//     }
+
+//     const role = req.userData.user_role
+    
+//     if (role !== 'admin') {
+//       return next (new HttpError("Unauthorized access", 403))
+//     }
+//     const companyId = req.params.id;
+     
+//     const { name, industry, description, location, website } = req.body;
+//     const logoPath = req.file ? `/uploads/logos/${req.file.filename}` : null;
+
+
+//     const company = await Company.findById(companyId);
+//       if (!company) {
+//         return next(new HttpError("Company not found", 404));
+//       } else {
+//         company.name = name || company.name;
+//         company.industry = industry || company.industry;
+//         company.description = description || company.description;
+//         company.location = location || company.location;
+//         company.website = website || company.website;
+//         company.logo = logoPath || company.logo;
+        
+//         await company.save()
+
+//         res.status(200).json({
+//           status: true,
+//           message: "Company profile updated successfully",
+//           data: company
+
+//         })
+//       }
+//     } catch (err) {
+//         console.error(err)
+//       return next (new HttpError("Something went wrong while updating", 500))
+//     }
+// }
+
+// Default logo path
+const defaultLogo = "/uploads/logos/default-logo.png";
+
+// Add Company
 export const addCompany = async (req, res, next) => {
   try {
-    
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return next(new HttpError(errors.array()[0].msg, 422));
     }
 
-    const { name, industry, description, location, website, logo } = req.body;
-    
+    const { name, industry, description, location, website } = req.body;
     const role = req.userData.user_role;
-    
 
-    if (role !== 'admin') {
-      return res.status(403).json({ message: 'Only admins can add companies' });
+    if (role !== "admin") {
+      return res.status(403).json({ message: "Only admins can add companies" });
     }
 
     if (!name || !industry || !location) {
       return next(new HttpError("Required fields missing", 400));
     }
 
-  
-    const logoPath = req.file ? `/uploads/logos/${req.file.filename}` : null;
+    // Use uploaded file or default logo
+    const logoPath = req.file ? `/uploads/logos/${req.file.filename}` : defaultLogo;
+
     const newCompany = new Company({
       name,
       industry,
       description,
       location,
       website,
-      logo: logoPath
+      logo: logoPath,
     });
 
     await newCompany.save();
 
-
     res.status(201).json({
       status: true,
-      message: 'Company added successfully',
-      data: null
+      message: "Company added successfully",
+      data: newCompany,
     });
-
   } catch (err) {
-     console.error("Add Company Error:", err);
-    return next(new HttpError('Failed to add company', 500));
+    console.error("Add Company Error:", err);
+    return next(new HttpError("Failed to add company", 500));
   }
 };
 
-//update company
-export const editCompanyProfile = async (req,res,next) => {
-    try{
+// Update Company
+export const editCompanyProfile = async (req, res, next) => {
+  try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return next(new HttpError(errors.array()[0].msg, 422));
     }
 
-    const role = req.userData.user_role
-    
-    if (role !== 'admin') {
-      return next (new HttpError("Unauthorized access", 403))
+    const role = req.userData.user_role;
+    if (role !== "admin") {
+      return next(new HttpError("Unauthorized access", 403));
     }
-    const companyId = req.params.id;
-     
-    const { name, industry, description, location, website } = req.body;
-    const logoPath = req.file ? `/uploads/logos/${req.file.filename}` : null;
 
+    const companyId = req.params.id;
+    const { name, industry, description, location, website, removeLogo } = req.body;
 
     const company = await Company.findById(companyId);
-      if (!company) {
-        return next(new HttpError("Company not found", 404));
-      } else {
-        company.name = name || company.name;
-        company.industry = industry || company.industry;
-        company.description = description || company.description;
-        company.location = location || company.location;
-        company.website = website || company.website;
-        company.logo = logoPath || company.logo;
-        
-        await company.save()
-
-        res.status(200).json({
-          status: true,
-          message: "Company profile updated successfully",
-          data: company
-
-        })
-      }
-    } catch (err) {
-        console.error(err)
-      return next (new HttpError("Something went wrong while updating", 500))
+    if (!company) {
+      return next(new HttpError("Company not found", 404));
     }
-}
+
+    let logoPath;
+
+    if (removeLogo === "true") {
+      logoPath = defaultLogo;
+    } else if (req.file) {
+      logoPath = `/uploads/logos/${req.file.filename}`;
+    } else {
+      logoPath = company.logo;
+    }
+
+    company.name = name || company.name;
+    company.industry = industry || company.industry;
+    company.description = description || company.description;
+    company.location = location || company.location;
+    company.website = website || company.website;
+    company.logo = logoPath;
+
+    await company.save();
+
+    res.status(200).json({
+      status: true,
+      message: "Company profile updated successfully",
+      data: company,
+    });
+  } catch (err) {
+    console.error("Edit Company Error:", err);
+    return next(new HttpError("Something went wrong while updating", 500));
+  }
+};
 
 //delete company
 export const deleteCompany = async (req,res,next) => {
