@@ -80,8 +80,6 @@ export const registerUser = async (req, res, next) => {
 };
 
 //login
-
-
 export const loginUser = async (req, res, next) => {
     try {
         const errors = validationResult(req);
@@ -122,7 +120,9 @@ export const loginUser = async (req, res, next) => {
             data: {
                 _id: user.id,
                 email: user.email,
-                role: user.role
+                role: user.role,
+                name: user.name,    
+                image: user.image,          
             }
         });
 
