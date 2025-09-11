@@ -12,7 +12,7 @@ const applicationSchema = new mongoose.Schema(
       ref: 'Job',
       required: true,
     },
-    appliedAt: {
+    appliedAt: {  
       type: Date,
       default: Date.now,
     },

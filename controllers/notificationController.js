@@ -7,8 +7,6 @@ import User from '../models/users.js';
 export const listAlerts = async (req, res, next) => {
   try {
     const userId = req.userData.user_id; 
-    console.log("Fetching alerts for user:", userId);
-
 
     let alerts = await Alert.find({
       userId,
