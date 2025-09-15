@@ -117,57 +117,118 @@ export const viewApplication = async (req, res, next) => {
 
 
 // list
+// export const listApplication = async (req, res, next) => {
+//   try {
+//     const { user_role, user_id } = req.userData;
+
+//     if (user_role === "admin") {
+//       const listedApplications = await Application.find()
+//         .select("user job appliedAt status resume contactInfo")
+//         .populate([
+//           { path: "user", select: "name" },
+//           { 
+//             path: "job", 
+//             select: "title company",
+//             populate: { path: "company", select: "name" } 
+//           }
+//         ])
+//         .sort({ createdAt: -1 });
+
+//       if (listedApplications.length === 0) {
+//         return next(new HttpError("No applications found", 404));
+//       }
+
+//       return res.status(200).json({
+//         status: true,
+//         message: "success",
+//         data: listedApplications,
+//       });
+//     } 
+    
+//     else {
+//       const appliedApplication = await Application.find({ user: user_id })
+//         .select("job appliedAt status resume")
+//         .populate([
+//           { 
+//             path: "job", 
+//             select: "title company",
+//             populate: { path: "company", select: "name" } 
+//           }
+//         ])
+//         .sort({ createdAt: -1 });
+
+//       return res.status(200).json({
+//         status: true,
+//         message: "success",
+//         data: appliedApplication,
+//       });
+//     }
+//   } catch (err) {
+//     console.error("failed to list application", err);
+//     return next(new HttpError("Failed to fetch application details", 500));
+//   }
+// };
+
 export const listApplication = async (req, res, next) => {
   try {
     const { user_role, user_id } = req.userData;
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    let filter = {};
+    if (user_role !== "admin") {
+      filter = { user: user_id };
+    }
+
+    const query = Application.find(filter)
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
 
     if (user_role === "admin") {
-      const listedApplications = await Application.find()
+      query
         .select("user job appliedAt status resume contactInfo")
         .populate([
           { path: "user", select: "name" },
-          { 
-            path: "job", 
+          {
+            path: "job",
             select: "title company",
-            populate: { path: "company", select: "name" } 
-          }
-        ])
-        .sort({ createdAt: -1 });
-
-      if (listedApplications.length === 0) {
-        return next(new HttpError("No applications found", 404));
-      }
-
-      return res.status(200).json({
-        status: true,
-        message: "success",
-        data: listedApplications,
-      });
-    } 
-    
-    else {
-      const appliedApplication = await Application.find({ user: user_id })
+            populate: { path: "company", select: "name" },
+          },
+        ]);
+    } else {
+      query
         .select("job appliedAt status resume")
         .populate([
-          { 
-            path: "job", 
+          {
+            path: "job",
             select: "title company",
-            populate: { path: "company", select: "name" } 
-          }
-        ])
-        .sort({ createdAt: -1 });
-
-      return res.status(200).json({
-        status: true,
-        message: "success",
-        data: appliedApplication,
-      });
+            populate: { path: "company", select: "name" },
+          },
+        ]);
     }
+
+    const [applications, total] = await Promise.all([
+      query.exec(),
+      Application.countDocuments(filter),
+    ]);
+
+    const totalPages = Math.ceil(total / limit);
+
+    return res.status(200).json({
+      status: true,
+      message: "success",
+      data: applications,
+      currentPage: page,
+      totalPages,
+    });
   } catch (err) {
     console.error("failed to list application", err);
     return next(new HttpError("Failed to fetch application details", 500));
   }
 };
+
 
 
 

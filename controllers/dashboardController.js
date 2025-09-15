@@ -26,3 +26,72 @@ export const getCounts = async (req, res) => {
           message: "Failed to fetch counts" });
   }
 };
+
+
+// Applications over time (by month)
+export const getApplicationsOverTime = async (req, res) => {
+  try {
+    const results = await Application.aggregate([
+      {
+        $group: {
+          _id: { $month: "$appliedAt" }, // appliedAt must exist in your schema
+          count: { $sum: 1 }
+        }
+      },
+      { $sort: { "_id": 1 } }
+    ]);
+
+    // convert 1 → Jan, 2 → Feb, etc.
+    const monthNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    const formatted = results.map(r => ({
+      month: monthNames[r._id - 1],
+      count: r.count
+    }));
+
+    res.status(200).json({ status: true, data: formatted });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ status: false, message: "Failed to fetch applications over time" });
+  }
+};
+
+
+export const getJobsByIndustry = async (req, res) => {
+  try {
+    const jobsByIndustry = await Job.aggregate([
+      {
+        $lookup: {
+          from: "companies",            // collection name in Mongo
+          localField: "company",
+          foreignField: "_id",
+          as: "companyData"
+        }
+      },
+      { $unwind: "$companyData" },
+      {
+        $group: {
+          _id: { $ifNull: ["$companyData.industry", "Uncategorized"] },
+          count: { $sum: 1 }
+        }
+      },
+      {
+        $project: {
+          _id: 0,
+          name: "$_id",
+          value: "$count"
+        }
+      }
+    ]);
+
+    res.status(200).json({
+      status: true,
+      data: jobsByIndustry
+    });
+  } catch (err) {
+    console.error("Failed to fetch jobs by industry", err);
+    res.status(500).json({
+      status: false,
+      message: "Failed to fetch jobs by industry"
+    });
+  }
+};
