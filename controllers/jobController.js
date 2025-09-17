@@ -149,12 +149,12 @@ export const addJob = async (req, res, next) => {
     }
     
     const languages = Array.isArray(language)
-  ? language
-  : language?.split(",").map(l => l.trim()) || [];
+    ? language
+    : language?.split(",").map(l => l.trim()) || [];
 
-const jobKeywords = Array.isArray(keyword)
-  ? keyword.map(k => k.trim().toLowerCase())
-  : keyword?.split(",").map(k => k.trim().toLowerCase()) || [];
+    const jobKeywords = Array.isArray(keyword)
+    ? keyword.map(k => k.trim().toLowerCase())
+    : keyword?.split(",").map(k => k.trim().toLowerCase()) || [];
 
 const addedJob = await new Job({
   title,

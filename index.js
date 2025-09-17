@@ -11,6 +11,7 @@ import subscriptionRouter from './routes/subscriptionRoute.js'
 import alertRoute from './routes/notificationRoute.js'
 import cookieParser from 'cookie-parser'
 import dashboardRouter from './routes/dashboardRoute.js'
+import interviewRouter from './routes/interview.js'
 
 dotenv.config()
 // console.log("Email Host:", process.env.EMAIL_HOST); // should print sandbox.smtp.mailtrap.io
@@ -40,6 +41,7 @@ app.use('/api/application', applicationRouter)
 app.use('/api/subscription', subscriptionRouter)
 app.use('/api/alert',alertRoute)
 app.use('/api/dashboard',dashboardRouter)
+app.use('/api/interview', interviewRouter)
 
 // Custom error handler
 app.use((error, req, res, next) => {
