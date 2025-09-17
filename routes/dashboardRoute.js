@@ -1,5 +1,4 @@
 import { Router } from "express";
-import userAuthCheck from "../middlewares/authCheck.js";
 import { getApplicationsOverTime, getCounts, getJobsByIndustry } from "../controllers/dashboardController.js"; 
 
 const dashboardRouter = Router();

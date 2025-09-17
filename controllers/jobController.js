@@ -7,7 +7,7 @@ import transporter from "../utils/mailer.js";
 import Subscription from "../models/subscription.js";
 import Alert from "../models/notification.js";
 
-// //list
+//list
 export const listJob = async (req, res, next) => {
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 10;
@@ -21,18 +21,19 @@ export const listJob = async (req, res, next) => {
     if (title) {
       query.title = { $regex: title.trim(), $options: "i" };
     }
-
-    if (location) {
-      query.location = { $regex: location.trim(), $options: "i" };
-    }
-
+    
     if (jobType) {
       query.jobType = jobType;
+    }
+
+    if (location && workMode !== "Remote") {
+      query.location = { $regex: location.trim(), $options: "i" };
     }
 
     if (workMode) {
       query.workMode = workMode;
     }
+
 
     if (keyword) {
       query.keyword = { $in: [new RegExp(keyword.trim(), "i")] };
@@ -275,14 +276,6 @@ export const editJob = async (req, res, next) => {
           keyword: jobKeywords,
           workMode
         };
-
-        // if (company) {
-        //   const existingCompany = await Company.findOne({ _id: company, isDeleted: false });
-        //   if (!existingCompany) {
-        //     return next(new HttpError("Company not found or is deleted", 404));
-        //   }
-        //   updatedJob.company = existingCompany._id;
-        // }
 
         const editedJob = await Job.findOneAndUpdate(
           { _id: id },
