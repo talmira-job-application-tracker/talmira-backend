@@ -1,12 +1,13 @@
 import { Router } from "express";
 import { check, validationResult } from "express-validator";
 import userAuthCheck from "../middlewares/authCheck.js";
-import { scheduleInterview } from "../controllers/interviewControllers.js";
+import { getAllInterviews, scheduleInterview } from "../controllers/interviewControllers.js";
 
 const interviewRouter = Router();
 
 interviewRouter.use(userAuthCheck);
 
+interviewRouter.get('/list',getAllInterviews)
 interviewRouter.post(
   "/schedule",
   [
@@ -34,5 +35,7 @@ interviewRouter.post(
   },
   scheduleInterview
 );
+
+
 
 export default interviewRouter;

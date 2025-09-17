@@ -2,6 +2,7 @@ import Application from "../models/application.js";
 import Interview from "../models/interviews.js";
 import Alert from "../models/notification.js";
 
+//scheduleinterview
 export const scheduleInterview = async (req, res) => {
   try {
     const { applicationId, scheduledAt, mode, location, notes } = req.body;
@@ -10,9 +11,6 @@ export const scheduleInterview = async (req, res) => {
       return res.status(403).json({ message: "Only admins can schedule interviews" });
     }
 
-    if (!scheduledAt) {
-      return res.status(400).json({ message: "Scheduled date/time is required" });
-    }
 
     // Fetch application with job, company, and user populated
     const application = await Application.findById(applicationId)
@@ -50,9 +48,7 @@ export const scheduleInterview = async (req, res) => {
       .populate("companyId")
       .populate("candidateId");
 
-    // ----------------------------
     // IN-APP ALERT
-    // ----------------------------
     await Alert.create({
       userId: application.user._id,
       jobId: application.job._id,
@@ -74,3 +70,17 @@ export const scheduleInterview = async (req, res) => {
     res.status(500).json({ message: "Server Error" });
   }
 };
+
+
+// getAllInterviews
+export const getAllInterviews = async (req, res) => {
+  try {
+    const interviews = await Interview.find()
+      .populate('candidateId', 'name email phone')  
+      .populate('jobId', 'title company');          
+    res.status(200).json({ data: interviews });
+  } catch (err) {
+    res.status(500).json({ message: 'Error fetching interviews' });
+  }
+};
+
