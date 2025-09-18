@@ -1,13 +1,14 @@
 import { Router } from "express";
 import { check, validationResult } from "express-validator";
 import userAuthCheck from "../middlewares/authCheck.js";
-import { getAllInterviews, scheduleInterview } from "../controllers/interviewControllers.js";
+import { getAllInterviews, scheduleInterview, viewInterview } from "../controllers/interviewControllers.js";
 
 const interviewRouter = Router();
 
 interviewRouter.use(userAuthCheck);
 
 interviewRouter.get('/list',getAllInterviews)
+interviewRouter.get('/:id', viewInterview)
 interviewRouter.post(
   "/schedule",
   [
@@ -15,7 +16,7 @@ interviewRouter.post(
     check("scheduledAt").notEmpty().withMessage("Scheduled date/time is required"),
     check("mode")
       .notEmpty().withMessage("Mode is required")
-      .isIn(["online", "offline"]).withMessage("Mode must be 'online' or 'offline'"),
+      .isIn(["Online","Phone", "Offline"]).withMessage("Mode must be 'Online', 'Offline' or 'Phone'."),
     check("location").custom((value, { req }) => {
       if (req.body.mode === "offline" && (!value || value.trim() === "")) {
         throw new Error("Location is required for offline interviews");

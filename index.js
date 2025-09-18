@@ -11,7 +11,7 @@ import subscriptionRouter from './routes/subscriptionRoute.js'
 import alertRoute from './routes/notificationRoute.js'
 import cookieParser from 'cookie-parser'
 import dashboardRouter from './routes/dashboardRoute.js'
-import interviewRouter from './routes/interview.js'
+import interviewRouter from './routes/interviewRoute.js'
 
 dotenv.config()
 // console.log("Email Host:", process.env.EMAIL_HOST); // should print sandbox.smtp.mailtrap.io

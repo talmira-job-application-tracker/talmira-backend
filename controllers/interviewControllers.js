@@ -1,8 +1,122 @@
+// import HttpError from "../middlewares/httpError.js";
+// import Application from "../models/application.js";
+// import Interview from "../models/interviews.js";
+// import Alert from "../models/notification.js";
+
+// //scheduleinterview
+// export const scheduleInterview = async (req, res) => {
+//   try {
+//     const { applicationId, scheduledAt, mode, location, notes } = req.body;
+
+//     if (req.userData.user_role !== "admin") {
+//       return res.status(403).json({ message: "Only admins can schedule interviews" });
+//     }
+
+
+//     // Fetch application with job, company, and user populated
+//     const application = await Application.findById(applicationId)
+//       .populate({
+//         path: "job",
+//         populate: { path: "company" },
+//       })
+//       .populate("user");
+
+//     if (!application) {
+//       return res.status(404).json({ message: "Application not found" });
+//     }
+
+//     if (!application.job || !application.job.company) {
+//       return res
+//         .status(400)
+//         .json({ message: "Job or company details missing in application" });
+//     }
+
+//     // Create interview
+//     const interview = await Interview.create({
+//       applicationId,
+//       jobId: application.job._id,
+//       companyId: application.job.company._id,
+//       candidateId: application.user._id,
+//       scheduledAt,
+//       mode,
+//       location,
+//       notes,
+//     });
+
+//     // Populate job, company, and candidate details for response
+//     const populatedInterview = await Interview.findById(interview._id)
+//       .populate("jobId")
+//       .populate("companyId")
+//       .populate("candidateId");
+
+//     // IN-APP ALERT
+//     await Alert.create({
+//       userId: application.user._id,
+//       jobId: application.job._id,
+//       interviewId: interview._id, // optional: link alert to interview
+//       message: `Your interview for ${application.job.title} at ${application.job.company.name} has been scheduled on ${new Date(
+//         scheduledAt
+//       ).toLocaleString()}.`,
+//       link: `/interview/${interview._id}`,
+//       isRead: false,
+//     });
+
+//     res.status(201).json({
+//       status: true,
+//       message: "Interview scheduled successfully and in-app alert created",
+//       interview: populatedInterview,
+//     });
+//   } catch (error) {
+//     console.error("Schedule interview failed:", error);
+//     res.status(500).json({ message: "Server Error" });
+//   }
+// };
+
+
+// // list Interviews
+// export const getAllInterviews = async (req, res) => {
+//   try {
+//     const interviews = await Interview.find()
+//       .populate('candidateId', 'name email phone')  
+//       .populate('jobId', 'title company');          
+//     res.status(200).json({ data: interviews });
+//   } catch (err) {
+//     res.status(500).json({ message: 'Error fetching interviews' });
+//   }
+// };
+
+
+// //view 
+// export const viewInterview = async (req, res, next) => {
+//   try{
+//     const {id} = req.params
+
+//     let getInterview = await Interview.findById(id)
+//     .select("jobId candidateId scheduledAt mode status")
+//     .populate('candidateId', 'name email phone')
+//     .populate('jobId', 'title company');
+
+//     if(!getInterview) {
+//       return next(new HttpError("Interview not found", 404));
+//     }
+
+//     res.status(200).json({
+//       status: true,
+//       message: "success",
+//       data: getInterview
+//     });
+
+//   } catch (err) {
+//     return next(new HttpError("Failed to fetch interview details", 500));
+//   }
+// }
+
+import HttpError from "../middlewares/httpError.js";
 import Application from "../models/application.js";
 import Interview from "../models/interviews.js";
 import Alert from "../models/notification.js";
 
-//scheduleinterview
+// schedule interview
 export const scheduleInterview = async (req, res) => {
   try {
     const { applicationId, scheduledAt, mode, location, notes } = req.body;
@@ -10,7 +124,6 @@ export const scheduleInterview = async (req, res) => {
     if (req.userData.user_role !== "admin") {
       return res.status(403).json({ message: "Only admins can schedule interviews" });
     }
-
 
     // Fetch application with job, company, and user populated
     const application = await Application.findById(applicationId)
@@ -32,27 +145,28 @@ export const scheduleInterview = async (req, res) => {
 
     // Create interview
     const interview = await Interview.create({
-      applicationId,
-      jobId: application.job._id,
-      companyId: application.job.company._id,
-      candidateId: application.user._id,
+      application: application._id,
       scheduledAt,
       mode,
       location,
       notes,
     });
 
-    // Populate job, company, and candidate details for response
+    // Populate full details for response
     const populatedInterview = await Interview.findById(interview._id)
-      .populate("jobId")
-      .populate("companyId")
-      .populate("candidateId");
+      .populate({
+        path: "application",
+        populate: [
+          { path: "user", select: "name email phone" },
+          { path: "job", populate: { path: "company", select: "name" } }
+        ]
+      });
 
     // IN-APP ALERT
     await Alert.create({
       userId: application.user._id,
       jobId: application.job._id,
-      interviewId: interview._id, // optional: link alert to interview
+      interviewId: interview._id,
       message: `Your interview for ${application.job.title} at ${application.job.company.name} has been scheduled on ${new Date(
         scheduledAt
       ).toLocaleString()}.`,
@@ -71,16 +185,49 @@ export const scheduleInterview = async (req, res) => {
   }
 };
 
-
-// getAllInterviews
+// list interviews
 export const getAllInterviews = async (req, res) => {
   try {
     const interviews = await Interview.find()
-      .populate('candidateId', 'name email phone')  
-      .populate('jobId', 'title company');          
+      .populate({
+        path: "application",
+        populate: [
+          { path: "user", select: "name email phone" },
+          { path: "job", populate: { path: "company", select: "name" } }
+        ]
+      });
     res.status(200).json({ data: interviews });
   } catch (err) {
-    res.status(500).json({ message: 'Error fetching interviews' });
+    res.status(500).json({ message: "Error fetching interviews" });
   }
+};
+
+// view single interview
+export const viewInterview = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    const getInterview = await Interview.findById(id)
+      .populate({
+        path: "application",
+        populate: [
+          { path: "user", select: "name email phone" },
+          { path: "job", populate: { path: "company", select: "name" } }
+        ]
+      });
+
+    if (!getInterview) {
+      return next(new HttpError("Interview not found", 404));
+    }
+
+    res.status(200).json({
+      status: true,
+      message: "success",
+      data: getInterview,
+    });
+  } catch (err) {
+    return next(new HttpError("Failed to fetch interview details", 500));
+  }
+
 };
 

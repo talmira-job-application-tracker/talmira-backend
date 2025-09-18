@@ -2,99 +2,6 @@ import { validationResult } from "express-validator";
 import HttpError from "../middlewares/httpError.js";
 import Company from "../models/company.js";
 
-// //addcompany
-// export const addCompany = async (req, res, next) => {
-//   try {
-    
-//     const errors = validationResult(req);
-//     if (!errors.isEmpty()) {
-//       return next(new HttpError(errors.array()[0].msg, 422));
-//     }
-
-//     const { name, industry, description, location, website } = req.body;
-    
-//     const role = req.userData.user_role;
-    
-
-//     if (role !== 'admin') {
-//       return res.status(403).json({ message: 'Only admins can add companies' });
-//     }
-
-//     if (!name || !industry || !location) {
-//       return next(new HttpError("Required fields missing", 400));
-//     }
-
-  
-//     const logoPath = req.file ? `/uploads/logos/${req.file.filename}` : null;
-//     const newCompany = new Company({
-//       name,
-//       industry,
-//       description,
-//       location,
-//       website,
-//       logo: logoPath
-//     });
-
-//     await newCompany.save();
-
-
-//     res.status(201).json({
-//       status: true,
-//       message: 'Company added successfully',
-//       data: null
-//     });
-
-//   } catch (err) {
-//      console.error("Add Company Error:", err);
-//     return next(new HttpError('Failed to add company', 500));
-//   }
-// };
-
-// //update company
-// export const editCompanyProfile = async (req,res,next) => {
-//     try{
-//     const errors = validationResult(req);
-//     if (!errors.isEmpty()) {
-//       return next(new HttpError(errors.array()[0].msg, 422));
-//     }
-
-//     const role = req.userData.user_role
-    
-//     if (role !== 'admin') {
-//       return next (new HttpError("Unauthorized access", 403))
-//     }
-//     const companyId = req.params.id;
-     
-//     const { name, industry, description, location, website } = req.body;
-//     const logoPath = req.file ? `/uploads/logos/${req.file.filename}` : null;
-
-
-//     const company = await Company.findById(companyId);
-//       if (!company) {
-//         return next(new HttpError("Company not found", 404));
-//       } else {
-//         company.name = name || company.name;
-//         company.industry = industry || company.industry;
-//         company.description = description || company.description;
-//         company.location = location || company.location;
-//         company.website = website || company.website;
-//         company.logo = logoPath || company.logo;
-        
-//         await company.save()
-
-//         res.status(200).json({
-//           status: true,
-//           message: "Company profile updated successfully",
-//           data: company
-
-//         })
-//       }
-//     } catch (err) {
-//         console.error(err)
-//       return next (new HttpError("Something went wrong while updating", 500))
-//     }
-// }
-
 // Default logo path
 const defaultLogo = "/uploads/logos/default-logo.png";
 
@@ -222,7 +129,41 @@ export const deleteCompany = async (req,res,next) => {
   }
 }
 
-//list all companies
+// //list all companies
+// export const listCompanies = async (req, res, next) => {
+//   try {
+//     const role = req.userData.user_role;
+//     if (role !== 'admin') {
+//       return next(new HttpError("Unauthorized access!", 403));
+//     }
+
+//     // search 
+//     const search = req.query.query?.trim();
+//     const query = { isDeleted: false };
+
+//     if (search) {
+//       query.$or = [
+//         { name: { $regex: search, $options: "i" } },
+//         { industry: { $regex: search, $options: "i" } },
+//         { location: { $regex: search, $options: "i" } },
+//       ];
+//     }
+
+//     const companies = await Company.find(query);
+
+//     res.status(200).json({
+//       status: true,
+//       message: null,
+//       data: companies,
+//     });
+
+//   } catch (err) {
+//     console.error(err);
+//     return next(new HttpError("Failed to fetch companies", 500));
+//   }
+// };
+
+// List all companies with pagination
 export const listCompanies = async (req, res, next) => {
   try {
     const role = req.userData.user_role;
@@ -230,8 +171,11 @@ export const listCompanies = async (req, res, next) => {
       return next(new HttpError("Unauthorized access!", 403));
     }
 
-    // search 
     const search = req.query.query?.trim();
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
     const query = { isDeleted: false };
 
     if (search) {
@@ -242,12 +186,22 @@ export const listCompanies = async (req, res, next) => {
       ];
     }
 
-    const companies = await Company.find(query);
+    // Total count for pagination metadata
+    const totalCompanies = await Company.countDocuments(query);
+
+    // Fetch paginated companies
+    const companies = await Company.find(query)
+      .skip(skip)
+      .limit(limit)
+      .sort({ name: 1 }); // optional, sort alphabetically
 
     res.status(200).json({
       status: true,
       message: null,
       data: companies,
+      currentPage: page,
+      totalPages: Math.ceil(totalCompanies / limit),
+      totalCompanies,
     });
 
   } catch (err) {
@@ -255,6 +209,8 @@ export const listCompanies = async (req, res, next) => {
     return next(new HttpError("Failed to fetch companies", 500));
   }
 };
+
+
 
 
 
