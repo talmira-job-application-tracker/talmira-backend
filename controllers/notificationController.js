@@ -41,10 +41,6 @@ export const listAlerts = async (req, res, next) => {
   }
 };
 
-
-
-
-
 //delete alerts
 export const deleteAlert = async (req,res,next) => {
     try{
@@ -75,7 +71,7 @@ export const deleteAlert = async (req,res,next) => {
     }
 }
 
-// viewUnreadAlerts
+// view UnreadAlerts
 export const markAlertRead = async (req, res, next) => {
   try {
     const userId = req.userData.user_id;

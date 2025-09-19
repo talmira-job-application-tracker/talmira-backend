@@ -55,7 +55,7 @@ companyRouter.patch('/edit/:id', uploadLogo.single('logo'),
 
 
 companyRouter.delete('/delete/:id',deleteCompany)
-companyRouter.get('/list', listCompanies)//also have search
+companyRouter.get('/list', listCompanies)
 companyRouter.get('/view/:id',viewOneCompany)
 
 

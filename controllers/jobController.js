@@ -199,7 +199,7 @@ const addedJob = await new Job({
       });
     }
 
-    //in-app notification: matching skills/interests
+    //in-app notification
     const skillMatchedUsers = await User.find({
       $or: [
         { skills: { $in: jobKeywords } },
@@ -214,7 +214,7 @@ const addedJob = await new Job({
             message: `New job matches your skills/interests: ${title} at ${existingCompany.name}`,
             keywords: jobKeywords,
             location: location,
-            skills: [], //  add matched skills 
+            skills: [], 
         });
     }
 

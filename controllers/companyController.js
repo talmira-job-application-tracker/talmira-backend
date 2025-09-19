@@ -2,7 +2,6 @@ import { validationResult } from "express-validator";
 import HttpError from "../middlewares/httpError.js";
 import Company from "../models/company.js";
 
-// Default logo path
 const defaultLogo = "/uploads/logos/default-logo.png";
 
 // Add Company
@@ -24,7 +23,6 @@ export const addCompany = async (req, res, next) => {
       return next(new HttpError("Required fields missing", 400));
     }
 
-    // Use uploaded file or default logo
     const logoPath = req.file ? `/uploads/logos/${req.file.filename}` : defaultLogo;
 
     const newCompany = new Company({
@@ -129,41 +127,7 @@ export const deleteCompany = async (req,res,next) => {
   }
 }
 
-// //list all companies
-// export const listCompanies = async (req, res, next) => {
-//   try {
-//     const role = req.userData.user_role;
-//     if (role !== 'admin') {
-//       return next(new HttpError("Unauthorized access!", 403));
-//     }
-
-//     // search 
-//     const search = req.query.query?.trim();
-//     const query = { isDeleted: false };
-
-//     if (search) {
-//       query.$or = [
-//         { name: { $regex: search, $options: "i" } },
-//         { industry: { $regex: search, $options: "i" } },
-//         { location: { $regex: search, $options: "i" } },
-//       ];
-//     }
-
-//     const companies = await Company.find(query);
-
-//     res.status(200).json({
-//       status: true,
-//       message: null,
-//       data: companies,
-//     });
-
-//   } catch (err) {
-//     console.error(err);
-//     return next(new HttpError("Failed to fetch companies", 500));
-//   }
-// };
-
-// List all companies with pagination
+// List companies
 export const listCompanies = async (req, res, next) => {
   try {
     const role = req.userData.user_role;
@@ -186,14 +150,11 @@ export const listCompanies = async (req, res, next) => {
       ];
     }
 
-    // Total count for pagination metadata
     const totalCompanies = await Company.countDocuments(query);
-
-    // Fetch paginated companies
     const companies = await Company.find(query)
       .skip(skip)
       .limit(limit)
-      .sort({ name: 1 }); // optional, sort alphabetically
+      .sort({ name: 1 });
 
     res.status(200).json({
       status: true,
@@ -210,21 +171,12 @@ export const listCompanies = async (req, res, next) => {
   }
 };
 
-
-
-
-
 //view single company
 export const viewOneCompany = async (req,res,next) => {
   try{
-    // const role = req.userData.user_role;
     const companyId = req.params.id;
-
     let query = Company.findOne({ _id: companyId, isDeleted: false });
-
-    // if (role !== 'admin') {
-      query = query.select("name description location industry logo website");
-    // }
+    query = query.select("name description location industry logo website");
 
     const company = await query;
 
@@ -243,5 +195,3 @@ export const viewOneCompany = async (req,res,next) => {
     return next (new HttpError('Failed to fetch company',500))
   }
 }
-
-

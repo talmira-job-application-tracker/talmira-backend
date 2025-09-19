@@ -25,7 +25,7 @@ userRouter.patch("/edit",uploadLogo.single("image"),[
       .isIn(["admin", "user"]).withMessage("Role must be admin or user"),
 
     check("age")
-   .optional({ checkFalsy: true })    //check null
+   .optional({ checkFalsy: true })
    .isInt({ min: 0 }).withMessage("Age must be a positive number"),
 
     check("password")
@@ -39,8 +39,8 @@ userRouter.patch("/edit",uploadLogo.single("image"),[
     check("skills")
       .optional()
       .custom((val) => {
-        if (typeof val === "string") return true; // frontend sends CSV string
-        if (Array.isArray(val)) return true; // frontend sends array
+        if (typeof val === "string") return true;
+        if (Array.isArray(val)) return true; 
         throw new Error("Skills must be a string or array");
       }),
 

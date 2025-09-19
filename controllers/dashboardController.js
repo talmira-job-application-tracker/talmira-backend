@@ -28,20 +28,18 @@ export const getCounts = async (req, res) => {
 };
 
 
-// Applications over time (by month)
 export const getApplicationsOverTime = async (req, res) => {
   try {
     const results = await Application.aggregate([
       {
         $group: {
-          _id: { $month: "$appliedAt" }, // appliedAt must exist in your schema
+          _id: { $month: "$appliedAt" },
           count: { $sum: 1 }
         }
       },
       { $sort: { "_id": 1 } }
     ]);
 
-    // convert 1 → Jan, 2 → Feb, etc.
     const monthNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
     const formatted = results.map(r => ({
       month: monthNames[r._id - 1],
@@ -61,7 +59,7 @@ export const getJobsByIndustry = async (req, res) => {
     const jobsByIndustry = await Job.aggregate([
       {
         $lookup: {
-          from: "companies",            // collection name in Mongo
+          from: "companies",
           localField: "company",
           foreignField: "_id",
           as: "companyData"

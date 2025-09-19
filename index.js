@@ -14,7 +14,6 @@ import dashboardRouter from './routes/dashboardRoute.js'
 import interviewRouter from './routes/interviewRoute.js'
 
 dotenv.config()
-// console.log("Email Host:", process.env.EMAIL_HOST); // should print sandbox.smtp.mailtrap.io
 
 const app = express()
 const PORT = process.env.PORT || 8000;
@@ -43,7 +42,6 @@ app.use('/api/alert',alertRoute)
 app.use('/api/dashboard',dashboardRouter)
 app.use('/api/interview', interviewRouter)
 
-// Custom error handler
 app.use((error, req, res, next) => {
   res.status(error.code || 500).json({
     message: error.message || "An unknown error occurred!",
@@ -51,7 +49,6 @@ app.use((error, req, res, next) => {
   });
 });
 
-// starting server
 app.listen(PORT, () => {
     console.log(`server running on http://localhost:${PORT}`)
 })

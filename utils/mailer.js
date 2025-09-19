@@ -14,8 +14,8 @@ const transporter = nodemailer.createTransport({
     }
 });
 
-// Set up Handlebars templating
-const __dirname = path.resolve(); // Only if using ESModules
+//Handlebars templating
+const __dirname = path.resolve();
 transporter.use("compile", hbs({
     viewEngine: {
         extname: ".handlebars",

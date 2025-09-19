@@ -117,58 +117,6 @@ export const viewApplication = async (req, res, next) => {
 
 
 // list
-// export const listApplication = async (req, res, next) => {
-//   try {
-//     const { user_role, user_id } = req.userData;
-
-//     if (user_role === "admin") {
-//       const listedApplications = await Application.find()
-//         .select("user job appliedAt status resume contactInfo")
-//         .populate([
-//           { path: "user", select: "name" },
-//           { 
-//             path: "job", 
-//             select: "title company",
-//             populate: { path: "company", select: "name" } 
-//           }
-//         ])
-//         .sort({ createdAt: -1 });
-
-//       if (listedApplications.length === 0) {
-//         return next(new HttpError("No applications found", 404));
-//       }
-
-//       return res.status(200).json({
-//         status: true,
-//         message: "success",
-//         data: listedApplications,
-//       });
-//     } 
-    
-//     else {
-//       const appliedApplication = await Application.find({ user: user_id })
-//         .select("job appliedAt status resume")
-//         .populate([
-//           { 
-//             path: "job", 
-//             select: "title company",
-//             populate: { path: "company", select: "name" } 
-//           }
-//         ])
-//         .sort({ createdAt: -1 });
-
-//       return res.status(200).json({
-//         status: true,
-//         message: "success",
-//         data: appliedApplication,
-//       });
-//     }
-//   } catch (err) {
-//     console.error("failed to list application", err);
-//     return next(new HttpError("Failed to fetch application details", 500));
-//   }
-// };
-
 export const listApplication = async (req, res, next) => {
   try {
     const { user_role, user_id } = req.userData;

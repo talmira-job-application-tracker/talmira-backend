@@ -28,7 +28,7 @@ const alertSchema = new mongoose.Schema({
         default: false, 
     },
 
-    isActive: {        //for toggle
+    isActive: {
         type: Boolean,
         default: true,
     },

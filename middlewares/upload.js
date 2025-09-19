@@ -2,15 +2,12 @@ import multer from "multer";
 import path from "path";
 import fs from "fs";
 
-// Base uploads folder
 const baseUploadPath = path.join(process.cwd(), 'uploads');
 
-// Ensure base folder exists
 if (!fs.existsSync(baseUploadPath)) {
     fs.mkdirSync(baseUploadPath);
 }
 
-// Multer disk storage config
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
         let subfolder = 'others';
@@ -23,7 +20,6 @@ const storage = multer.diskStorage({
 
         const finalPath = path.join(baseUploadPath, subfolder);
 
-        // Ensure subfolder exists
         if (!fs.existsSync(finalPath)) {
             fs.mkdirSync(finalPath, { recursive: true });
         }
@@ -37,7 +33,6 @@ const storage = multer.diskStorage({
     }
 });
 
-// File filter for images (logos)
 const imageFilter = (req, file, cb) => {
     if (file.mimetype.startsWith('image/')) {
         cb(null, true);
@@ -46,12 +41,11 @@ const imageFilter = (req, file, cb) => {
     }
 };
 
-// File filter for resumes
 const resumeFilter = (req, file, cb) => {
     const allowedMimeTypes = [
         'application/pdf',
         'application/msword',
-        'application/vnd.openxmlformats-officedocument.wordprocessingml.document' // .docx
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
     ];
 
     if (allowedMimeTypes.includes(file.mimetype)) {
@@ -61,15 +55,14 @@ const resumeFilter = (req, file, cb) => {
     }
 };
 
-// Exported upload handlers
 export const uploadLogo = multer({
     storage: storage,
     fileFilter: imageFilter,
-    limits: { fileSize: 5 * 1024 * 1024 } // 5 MB
+    limits: { fileSize: 5 * 1024 * 1024 }
 });
 
 export const uploadResume = multer({
     storage: storage,
     fileFilter: resumeFilter,
-    limits: { fileSize: 10 * 1024 * 1024 } // 10 MB
+    limits: { fileSize: 10 * 1024 * 1024 }
 });

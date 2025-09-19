@@ -49,7 +49,7 @@ export const subscribedCompanies = async (req, res, next) => {
 
 
 
-//toggle subscription (subscribe/unsubscribe)
+//subscribe button
 export const toggleSubscription = async (req, res, next) => {
     try {
         const { companyId } = req.params;
@@ -57,7 +57,6 @@ export const toggleSubscription = async (req, res, next) => {
 
         let subscription = await Subscription.findOne({ userId, companyId });
 
-        // If no record exists create and subscribe
         if (!subscription) {
             subscription = await Subscription.create({
                 userId,

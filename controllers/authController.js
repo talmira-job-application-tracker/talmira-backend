@@ -8,7 +8,6 @@ import jwt from "jsonwebtoken";
 export const registerUser = async (req, res, next) => {
     try{
         const errors = validationResult(req);
-        console.log('validation errors:',errors);
 
         if(!errors.isEmpty()) {
             return next(new HttpError(errors.array()[0].msg, 422));
@@ -69,8 +68,7 @@ export const registerUser = async (req, res, next) => {
         }
     } catch (err) {
         console.error("Register Error:", err);
-        
-        //check duplication
+    
         if (err.code === 11000) {
         const field = Object.keys(err.keyValue)[0];
         return next(new HttpError(`${field} already exists`, 400));

@@ -6,7 +6,6 @@ import { getAllInterviews, scheduleInterview, viewInterview } from "../controlle
 const interviewRouter = Router();
 
 interviewRouter.use(userAuthCheck);
-
 interviewRouter.get('/list',getAllInterviews)
 interviewRouter.get('/:id', viewInterview)
 interviewRouter.post(
@@ -36,7 +35,5 @@ interviewRouter.post(
   },
   scheduleInterview
 );
-
-
 
 export default interviewRouter;

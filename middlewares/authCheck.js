@@ -8,7 +8,6 @@ const userAuthCheck = async (req, res, next) => {
   }
 
   try {
-    // Get token from cookies 
     const token = req.cookies?.token;  
 
     if (!token) {
