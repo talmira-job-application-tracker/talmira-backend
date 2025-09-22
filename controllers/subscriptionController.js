@@ -104,7 +104,3 @@ export const toggleSubscription = async (req, res, next) => {
         next(new HttpError("Subscription toggle failed", 500));
     }
 };
-
-
-
-
